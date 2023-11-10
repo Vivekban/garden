@@ -23,7 +23,7 @@ class PlantDetailViewModel @Inject constructor(
     private val gardenPlantingRepository: GardenPlantingRepositoryImpl,
 ) : ViewModel() {
 
-    val plantId: String = savedStateHandle.get<String>(PLANT_ID_SAVED_STATE_KEY)!!
+    val plantId: Int = savedStateHandle.get<Int>(PLANT_ID_SAVED_STATE_KEY)!!
 
     val isPlanted = gardenPlantingRepository.isPlanted(plantId)
     val plant = plantRepository.getPlant(plantId).asLiveData()

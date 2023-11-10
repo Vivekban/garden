@@ -16,7 +16,7 @@ interface PlantDao {
     fun getPlants(query: String?): PagingSource<Int, PlantEntity>
 
     @Query("SELECT * FROM plants WHERE id = :plantId")
-    fun getPlant(plantId: String): Flow<PlantEntity>
+    fun getPlant(plantId: Int): Flow<PlantEntity>
 
     @Upsert
     suspend fun upsertAll(plants: List<PlantEntity>)

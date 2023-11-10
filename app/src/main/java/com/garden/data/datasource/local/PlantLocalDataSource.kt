@@ -11,7 +11,7 @@ interface PlantLocalDataSource {
 
     fun getPlants(query: String): PagingSource<Int, PlantEntity>
 
-    fun getPlant(plantId: String): Flow<PlantEntity>
+    fun getPlant(plantId: Int): Flow<PlantEntity>
 
     suspend fun upsertAll(plants: List<PlantEntity>)
 

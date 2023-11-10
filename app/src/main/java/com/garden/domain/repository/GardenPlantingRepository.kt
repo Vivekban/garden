@@ -6,11 +6,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface GardenPlantingRepository {
 
-    suspend fun createGardenPlanting(plantId: String)
+    suspend fun createGardenPlanting(plantId: Int)
 
     suspend fun removeGardenPlanting(planting: Planting)
 
-    fun isPlanted(plantId: String): Flow<Boolean>
+    fun isPlanted(plantId: Int): Flow<Boolean>
 
     fun getPlantedGardens(): Flow<List<PlantAndPlantings>>
 

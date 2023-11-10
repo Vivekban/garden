@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.garden.data.entity.PlantAndPlantingsEntity
 import com.garden.data.entity.PlantingEntity
+import com.garden.data.entity.PlantEntity
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -18,7 +19,7 @@ interface PlantingDao {
     fun getGardenPlantings(): Flow<List<PlantingEntity>>
 
     @Query("SELECT EXISTS(SELECT 1 FROM garden_plantings WHERE plant_id = :plantId LIMIT 1)")
-    fun isPlanted(plantId: String): Flow<Boolean>
+    fun isPlanted(plantId: Int): Flow<Boolean>
 
     /**
      * This query will tell Room to query both the [PlantEntity] and [PlantingEntity] tables and handle

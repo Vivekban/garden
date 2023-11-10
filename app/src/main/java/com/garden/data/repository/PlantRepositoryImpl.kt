@@ -54,5 +54,5 @@ class PlantRepositoryImpl @Inject constructor(
         ).flow.map { it.map { plant -> plant.toModel() } }
     }
 
-    override fun getPlant(plantId: String) = local.getPlant(plantId).map { it.toModel() }
+    override fun getPlant(plantId: Int) = local.getPlant(plantId).map { it.toModel() }
 }

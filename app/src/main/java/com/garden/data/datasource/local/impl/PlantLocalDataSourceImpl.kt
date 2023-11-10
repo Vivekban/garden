@@ -18,7 +18,7 @@ class PlantLocalDataSourceImpl @Inject constructor(private val dao: PlantDao) :
 
     override fun getPlants(query: String): PagingSource<Int, PlantEntity> = dao.getPlants(query)
 
-    override fun getPlant(plantId: String): Flow<PlantEntity> = dao.getPlant(plantId)
+    override fun getPlant(plantId: Int): Flow<PlantEntity> = dao.getPlant(plantId)
     override suspend fun upsertAll(plants: List<PlantEntity>) = dao.upsertAll(plants)
 
     override suspend fun clearAll() = dao.clearAll()

@@ -10,7 +10,7 @@ import java.util.Calendar
 data class Planting(
     var id: Long = 0,
 
-    val plantId: String,
+    val plantId: Int,
 
     /**
      * Indicates when the [PlantEntity] was planted. Used for showing notification when it's time

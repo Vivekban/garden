@@ -23,7 +23,7 @@ data class PlantingEntity(
     @ColumnInfo(name = "id")
     var id: Long = 0,
 
-    @ColumnInfo(name = "plant_id") val plantId: String,
+    @ColumnInfo(name = "plant_id") val plantId: Int,
 
     /**
      * Indicates when the [PlantEntity] was planted. Used for showing notification when it's time

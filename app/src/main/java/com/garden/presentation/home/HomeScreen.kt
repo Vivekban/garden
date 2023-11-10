@@ -110,8 +110,6 @@ fun HomeScreen(
                     plantListViewModel.performAction(PlantListUiAction.Search(query))
                 }, onSearchTriggered = { query ->
                     plantListViewModel.performAction(PlantListUiAction.Search(query))
-                }, onFilterClick = {
-
                 })
         }) { contentPadding ->
         HomePagerScreen(
@@ -237,7 +235,6 @@ private fun HomeTopAppBar(
     pagerState: PagerState,
     isSearching: Boolean,
     onSearchClick: () -> Unit,
-    onFilterClick: () -> Unit,
     onSearchQueryChanged: (String) -> Unit,
     searchQuery: String = "",
     onSearchTriggered: (String) -> Unit,

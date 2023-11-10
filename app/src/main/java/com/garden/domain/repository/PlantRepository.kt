@@ -15,5 +15,5 @@ interface PlantRepository {
 
     fun getPlants(query: String): Flow<PagingData<Plant>>
 
-    fun getPlant(plantId: String): Flow<Plant>
+    fun getPlant(plantId: Int): Flow<Plant>
 }

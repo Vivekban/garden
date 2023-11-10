@@ -15,7 +15,7 @@ class GardenPlantingRepositoryImpl @Inject constructor(
     private val plantingDao: PlantingDao
 ) : GardenPlantingRepository {
 
-    override suspend fun createGardenPlanting(plantId: String) {
+    override suspend fun createGardenPlanting(plantId: Int) {
         val planting = PlantingEntity(0, plantId)
         plantingDao.insertGardenPlanting(planting)
     }
@@ -24,7 +24,7 @@ class GardenPlantingRepositoryImpl @Inject constructor(
         plantingDao.deleteGardenPlanting(planting.toEntity())
     }
 
-    override fun isPlanted(plantId: String) =
+    override fun isPlanted(plantId: Int) =
         plantingDao.isPlanted(plantId)
 
     override fun getPlantedGardens() =
