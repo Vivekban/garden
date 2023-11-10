@@ -5,8 +5,9 @@ of plants in their garden from a huge cloud database (backed by Perenual). App t
 a plant.
 
 ## Screenshots
-
-| <img src="screenshot/garden.jpg" width="250"> | <img src="screenshot/plants.jpg" width="250"> | <img src="screenshot/plant_detail.jpg" width="250"> |
+| Mode  | Garden                                        | Plants                                        | Plant Details                                       |
+|-------|-----------------------------------------------|-----------------------------------------------|-----------------------------------------------------|
+| Light | <img src="screenshot/garden.jpg" width="250"> | <img src="screenshot/plants.jpg" width="250"> | <img src="screenshot/plant_detail.jpg" width="250"> |
 
 ## Features
 
