@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -53,7 +53,6 @@ fun PlantListScreen(
         }
     }
 
-
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = modifier.testTag("plant_list"),
@@ -63,24 +62,29 @@ fun PlantListScreen(
         )
     ) {
         items(
-            items = plants.itemSnapshotList,
-            key = { it?.id ?: 0 }
-        ) { plant ->
-            plant?.let {
+            plants.itemCount
+        ) { index ->
+            plants[index]?.let { plant ->
                 PlantListItem(plant = plant) {
                     onPlantClick(plant)
                 }
             }
         }
 
-        item {
+        item(span = { GridItemSpan(2) }) {
             if (plants.loadState.append is LoadState.Loading) {
                 CircularProgressIndicator(Modifier.padding(dimensionResource(id = R.dimen.card_side_margin)))
             }
         }
     }
 
-    if (plants.itemSnapshotList.isEmpty() &&
+    if (plants.loadState.refresh is LoadState.Loading) {
+        Box(modifier = modifier.fillMaxSize()) {
+            CircularProgressIndicator(
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+    } else if (plants.itemSnapshotList.isEmpty() &&
         (plants.loadState.refresh is LoadState.NotLoading || plants.loadState.append is LoadState.NotLoading)
     ) {
         Box(modifier = modifier.fillMaxSize()) {
@@ -88,12 +92,6 @@ fun PlantListScreen(
                 if ((searchQuery ?: "").isNotEmpty()) {
                     stringResource(R.string.no_plant_found_containing, searchQuery!!)
                 } else stringResource(R.string.no_plant_found),
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-    } else if (plants.loadState.refresh is LoadState.Loading) {
-        Box(modifier = modifier.fillMaxSize()) {
-            CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.Center)
             )
         }
