@@ -68,7 +68,7 @@ class PlantDaoTest {
         val result = plantList.load(
             PagingSource.LoadParams.Refresh(
                 key = 0,
-                loadSize = Constant.ITEM_PER_PAGE,
+                loadSize = Constant.ITEMS_PER_PAGE,
                 placeholdersEnabled = false
             )
         )

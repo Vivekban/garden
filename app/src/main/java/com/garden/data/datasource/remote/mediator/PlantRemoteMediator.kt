@@ -13,6 +13,7 @@ import com.garden.data.datasource.remote.PlantRemoteDataSource
 import com.garden.data.entity.PlantEntity
 import com.garden.data.entity.RemoteKeysEntity
 import com.garden.data.mappers.toEntity
+import com.google.gson.JsonSyntaxException
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -71,7 +72,6 @@ class PlantRemoteMediator(
             appDatabase.withTransaction {
                 if (loadType == LoadType.REFRESH) {
                     remoteKeysLocalDataSource.clearAll()
-                    local.clearAll()
                 }
                 val prevKey = if (page == Constant.PAGE_STARTING_INDEX) null else page - 1
                 val nextKey = if (endOfPaginationReached) null else page + 1
@@ -91,10 +91,13 @@ class PlantRemoteMediator(
 
             return MediatorResult.Success(endOfPaginationReached = result.data?.isEmpty() ?: true)
 
-        } catch (exception: IOException) {
-            return MediatorResult.Error(exception)
-        } catch (exception: HttpException) {
-            return MediatorResult.Error(exception)
+        }catch (exception: Exception) {
+            when(exception) {
+                is IOException, is HttpException, is JsonSyntaxException-> {
+                    return MediatorResult.Error(exception)
+                }
+                else -> throw exception
+            }
         }
     }
 

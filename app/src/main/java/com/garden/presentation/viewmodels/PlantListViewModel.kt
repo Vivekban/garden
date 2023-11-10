@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.garden.common.Constant
 import com.garden.domain.model.Plant
 import com.garden.domain.usecase.plant.GetPlantsUsecase
 import com.garden.domain.usecase.plant.GetPlantsUsecaseInput
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
@@ -85,9 +87,11 @@ class PlantListViewModel @Inject internal constructor(
 
     val state: StateFlow<PlantListUiState> = _state
 
-    val pagingDataSource: Flow<PagingData<Plant>> = _searches.flatMapLatest {
-        getPlants(it.query)
-    }.cachedIn(viewModelScope)
+    val pagingDataSource: Flow<PagingData<Plant>> =
+        _searches.debounce(Constant.SEARCH_DEBOUNCE_TIME_MS)
+            .flatMapLatest {
+                getPlants(it.query)
+            }.cachedIn(viewModelScope)
 
 
     private fun getPlants(query: String): Flow<PagingData<Plant>> {

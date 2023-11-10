@@ -20,9 +20,6 @@ data class PlantDto(
     @SerializedName("default_image")
     val plantImageDto: PlantImageDto?,
 
-    @SerializedName("sunlight")
-    val sunlight: List<Any?>?,
-
     @SerializedName("watering")
     val watering: WateringNeed?
 ) {

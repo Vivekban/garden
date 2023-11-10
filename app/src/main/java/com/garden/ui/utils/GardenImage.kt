@@ -6,6 +6,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,6 +55,11 @@ fun GardenImage(
         loading = placeholder {
             Box(modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(Modifier.size(40.dp))
+            }
+        },
+        failure = placeholder {
+            Box(modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                Icon(Icons.Default.Warning, "Error")
             }
         }
     )

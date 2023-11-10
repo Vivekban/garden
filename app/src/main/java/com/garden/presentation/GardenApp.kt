@@ -49,7 +49,7 @@ fun GardenNavHost(
         composable(
             "plantDetail/{plantId}",
             arguments = listOf(navArgument("plantId") {
-                type = NavType.StringType
+                type = NavType.IntType
             })
         ) {
             PlantDetailsScreen(

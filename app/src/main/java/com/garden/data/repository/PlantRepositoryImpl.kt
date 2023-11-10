@@ -39,9 +39,9 @@ class PlantRepositoryImpl @Inject constructor(
 
         return Pager(
             config = PagingConfig(
-                Constant.ITEM_PER_PAGE,
-                initialLoadSize = Constant.ITEM_PER_PAGE,
-                prefetchDistance = 1
+                Constant.ITEMS_PER_PAGE,
+                initialLoadSize = Constant.ITEMS_PER_PAGE,
+                prefetchDistance = Constant.ITEMS_PREFETCH_DISTANCE
             ),
             remoteMediator = PlantRemoteMediator(
                 query,

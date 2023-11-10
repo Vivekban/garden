@@ -1,6 +1,7 @@
 package com.garden.common
 
 object Constant {
+
     const val BASE_URL = "https://perenual.com/api/"
 
     const val BASE_URL_UNSPLASH = "https://api.unsplash.com/"
@@ -16,7 +17,13 @@ object Constant {
 
     const val PAGE_STARTING_INDEX = 1
 
-    const val ITEM_PER_PAGE = 30
+    const val ITEMS_PER_PAGE = 30
+
+    /**
+     * Prefetch distance which defines how far from the edge of loaded content
+     * an access must be to trigger further loading.
+     */
+    const val ITEMS_PREFETCH_DISTANCE = 10
 
     /**
      *  Used when information about Water required by plants is missing from API
@@ -26,5 +33,11 @@ object Constant {
     const val DEFAULT_WATERING_NEED = 7
 
     const val MAX_GROWING_ZONES = 20
+
+    /**
+     * Wait for below time before starting hitting api.
+     * This avoid hitting api multiple time while user types search query.
+     */
+    const val SEARCH_DEBOUNCE_TIME_MS: Long = 600
 
 }
