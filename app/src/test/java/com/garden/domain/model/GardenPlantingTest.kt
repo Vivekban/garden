@@ -1,4 +1,4 @@
-package com.garden.data
+package com.garden.domain.model
 
 import com.garden.domain.model.Planting
 import org.hamcrest.CoreMatchers.equalTo
@@ -14,7 +14,7 @@ class GardenPlantingTest {
 
     @Test
     fun testDefaultValues() {
-        val planting = Planting(0, "1")
+        val planting = Planting(0, 1)
         val cal = Calendar.getInstance()
         assertYMD(cal, planting.plantDate)
         assertYMD(cal, planting.lastWateringDate)

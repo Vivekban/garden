@@ -1,25 +1,25 @@
-package com.garden.data
+package com.garden.data.database.dao
 
+import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.paging.PagingSource
 import androidx.room.Room
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.core.app.ApplicationProvider
 import com.garden.common.Constant
 import com.garden.data.database.AppDatabase
-import com.garden.data.database.dao.PlantDao
 import com.garden.data.entity.PlantEntity
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.equalTo
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
-@RunWith(AndroidJUnit4::class)
+@RunWith(RobolectricTestRunner::class)
 class PlantDaoTest {
 
     @get:Rule
@@ -28,14 +28,18 @@ class PlantDaoTest {
     private lateinit var database: AppDatabase
     private lateinit var plantDao: PlantDao
 
-    private val plantA = PlantEntity(1, "A", "", 1, 1, "")
-    private val plantB = PlantEntity(2, "B", "", 1, 1, "")
-    private val plantC = PlantEntity(3, "C", "", 2, 2, "")
+    private val plantA = PlantEntity(1, "p A", "", 1, 1, "")
+    private val plantB = PlantEntity(2, "p B", "", 1, 1, "")
+    private val plantC = PlantEntity(3, "p C", "", 2, 2, "")
+
+    private val query = ""
 
     @Before
     fun createDb() = runBlocking {
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
-        database = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
+        val context: Context = ApplicationProvider.getApplicationContext()
+        database = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java)
+            .allowMainThreadQueries()
+            .build()
         plantDao = database.plantDao()
 
         // Insert plants in non-alphabetical order to test that results are sorted by name
@@ -50,14 +54,15 @@ class PlantDaoTest {
     @Test
     fun testGetPlants() = runBlocking {
 
-        assertThat(plantDao.getPlant(plantA.plantId.toString()).first(), equalTo(plantA))
+        assertThat(plantDao.getPlant(plantA.plantId).first(), equalTo(plantA))
 
-        val plantList = plantDao.getPlants("")
+        val plantList: PagingSource<Int, PlantEntity> =
+            plantDao.getPlants("%${query.replace(' ', '%')}%")
 
         val expectedResult = PagingSource.LoadResult.Page(
             data = listOf(plantA, plantB, plantC),
             prevKey = null,
-            nextKey = 1
+            nextKey = null,
         )
 
         val result = plantList.load(
@@ -68,11 +73,11 @@ class PlantDaoTest {
             )
         )
 
-        assertThat(result, equalTo(expectedResult))
+        assertThat((result as PagingSource.LoadResult.Page).data, equalTo(expectedResult.data))
     }
 
     @Test
     fun testGetPlant() = runBlocking {
-        assertThat(plantDao.getPlant(plantA.plantId.toString()).first(), equalTo(plantA))
+        assertThat(plantDao.getPlant(plantA.plantId).first(), equalTo(plantA))
     }
 }

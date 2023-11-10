@@ -1,6 +1,5 @@
-package com.garden.data
+package com.garden.data.database
 
-import com.garden.data.database.Converters
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.util.Calendar

@@ -5,18 +5,7 @@ plugins {
     id("kotlin-parcelize")
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
-    id("jacoco")
-
 }
-
-//// Register the main JaCoCo task to later depend on the per-variant tasks
-//val jacocoTestReport = tasks.register("jacocoTestReport")
-//
-//tasks.withType<Test> {
-//    configure<JacocoTaskExtension> {
-//        isIncludeNoLocationClasses = true
-//    }
-//}
 
 android {
     compileSdk = libs.versions.compileSdk.get().toInt()
@@ -81,7 +70,11 @@ android {
         resources.excludes += "/META-INF/LGPL2.1"
     }
 
-
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
     namespace = "com.garden"
 
 }
@@ -159,6 +152,14 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.mockwebserver)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.hilt.android.testing)
+    testImplementation(libs.androidx.arch.core.testing)
+    testImplementation(libs.androidx.core)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.lifecycle.runtime.testing)
+
 }
 
 fun getUnsplashAccess(): String? {

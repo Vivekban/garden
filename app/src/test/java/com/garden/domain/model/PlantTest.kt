@@ -1,4 +1,4 @@
-package com.garden.data
+package com.garden.domain.model
 
 import com.garden.domain.model.Plant
 import org.junit.Assert.assertEquals

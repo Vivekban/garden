@@ -1,28 +1,32 @@
-package com.garden.data
+package com.garden.data.database.dao
 
+import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
-import androidx.test.espresso.matcher.ViewMatchers.assertThat
-import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.core.app.ApplicationProvider
 import com.garden.data.database.AppDatabase
-import com.garden.data.database.dao.PlantingDao
 import com.garden.data.entity.PlantingEntity
 import com.garden.data.mappers.toEntity
 import com.garden.domain.model.Planting
-import com.garden.utilities.testCalendar
-import com.garden.utilities.testPlant
-import com.garden.utilities.testPlanting
-import com.garden.utilities.testPlants
+import com.garden.fake.model.testCalendar
+import com.garden.fake.model.testPlant
+import com.garden.fake.model.testPlanting
+import com.garden.fake.model.testPlants
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.After
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+
+@RunWith(RobolectricTestRunner::class)
 class GardenPlantingDaoTest {
     private lateinit var database: AppDatabase
     private lateinit var plantingDao: PlantingDao
@@ -33,8 +37,10 @@ class GardenPlantingDaoTest {
 
     @Before
     fun createDb() = runBlocking {
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
-        database = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
+        val context: Context = ApplicationProvider.getApplicationContext()
+        database = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java)
+            .allowMainThreadQueries()
+            .build()
         plantingDao = database.gardenPlantingDao()
 
         database.plantDao().upsertAll(testPlants.map { it.toEntity() })
@@ -50,7 +56,7 @@ class GardenPlantingDaoTest {
     fun testGetGardenPlantings() = runBlocking {
         val planting2 = PlantingEntity(
             2,
-            testPlants[1].id.toString(),
+            testPlants[1].id,
             testCalendar,
             testCalendar
         )
@@ -62,7 +68,7 @@ class GardenPlantingDaoTest {
     fun testDeleteGardenPlanting() = runBlocking {
         val planting2 = PlantingEntity(
             2,
-            testPlants[1].id.toString(),
+            testPlants[1].id,
             testCalendar,
             testCalendar
         )
@@ -74,12 +80,12 @@ class GardenPlantingDaoTest {
 
     @Test
     fun testGetGardenPlantingForPlant() = runBlocking {
-        assertTrue(plantingDao.isPlanted(testPlant.id.toString()).first())
+        assertTrue(plantingDao.isPlanted(testPlant.id).first())
     }
 
     @Test
     fun testGetGardenPlantingForPlant_notFound() = runBlocking {
-        assertFalse(plantingDao.isPlanted(testPlants[2].id.toString()).first())
+        assertFalse(plantingDao.isPlanted(testPlants[2].id).first())
     }
 
     @Test
