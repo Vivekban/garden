@@ -20,7 +20,6 @@ a plant.
 
 
 # Architecture Layers
-More on this [Offical Doc](https://developer.android.com/topic/architecture)
 
 ### 1. Clean Architecture
 
@@ -47,21 +46,25 @@ The 3 modules of architecture are :
   It contains the implementations of the repositories declared in the domain layer. It may, for
   example, check if the data in a database is up to date, and retrieve it from service if it’s not.
 
-### 2. _MVVM
+### 2. MVVM
 The_ app uses clean architecture with MVVM(Model View View Model) design pattern. MVVM provides
 better separation of concern, easier testing, lifecycle awareness, etc.
 
 ![](screenshot/MVVM_Flow.png)
 
-### 3. Paging 3
-The Paging library includes the following features:
+### 3. Paging 
+For pagination Paging3 library is used which has the following features:
 
 - In-memory caching for your paged data. This helps ensure that your app uses system resources efficiently while working with paged data.
 - Built-in request deduplication, which helps ensure that your app uses network bandwidth and system resources efficiently.
 - Support for Kotlin coroutines and flows as well as LiveData and RxJava.
 - Built-in support for error handling, including refresh and retry capabilities.
 
+Data flow with Paging integration will look like below. Important point to note is that the local database will act as a single source of truth,
+means first data from remote will be added/updated to db then from db itself final information will be passed.  
 ![](screenshot/paging3.webp)
+
+More on Architecture [here](https://developer.android.com/topic/architecture)
 
 
 ## Folder Structure
@@ -111,6 +114,8 @@ Folder structure is important for scalability and readability
        |   |-- DatabaseModule.kt
        |   |-- NetworkModule.kt
        |-- domain
+       |   |-- fake
+       |   |   |-- FakeModels.kt
        |   |-- model
        |   |   |-- Plant.kt
        |   |-- repository
@@ -118,9 +123,6 @@ Folder structure is important for scalability and readability
        |   |-- usecase
        |   |   |-- plant
        |   |   |   |-- GetPlantsUsecase.kt
-       |-- fake
-       |   |-- model
-       |   |   |-- FakeModels.kt
        |-- presentation
        |   |-- GardenActivity.kt
        |   |-- GardenApp.kt
@@ -135,10 +137,6 @@ Folder structure is important for scalability and readability
        |   |-- viewmodels
        |   |   |-- HomeViewModel.kt
 
-
-- High level folder structure looks like below
-
-<img src="screenshot/folder_structure.png" width="300">
 
 ## Built With 🛠
 
@@ -247,8 +245,8 @@ from the ktlint [README](https://github.com/shyiko/ktlint/blob/master/README.md)
  
 
 ## Additional Resources
-- [Android App Architecture] (https://developer.android.com/topic/architecture)
-- [Clean Architecture Uncle Bob] (https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+- [Android App Architecture](https://developer.android.com/topic/architecture)
+- [Clean Architecture Uncle Bob](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
 
 ## Third Party Content
 -------------------
