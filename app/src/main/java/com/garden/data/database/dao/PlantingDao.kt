@@ -1,13 +1,14 @@
 package com.garden.data.database.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import com.garden.data.entity.PlantAndPlantingsEntity
-import com.garden.data.entity.PlantingEntity
 import com.garden.data.entity.PlantEntity
+import com.garden.data.entity.PlantingEntity
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -26,8 +27,8 @@ interface PlantingDao {
      * the object mapping.
      */
     @Transaction
-    @Query("SELECT * FROM plants WHERE id IN (SELECT DISTINCT(plant_id) FROM garden_plantings)")
-    fun getPlantedGardens(): Flow<List<PlantAndPlantingsEntity>>
+    @Query("SELECT * FROM plants WHERE id IN (SELECT DISTINCT(plant_id) FROM garden_plantings) AND name like :query")
+    fun getPlantedGardens(query: String): PagingSource<Int, PlantAndPlantingsEntity>
 
     @Insert
     suspend fun insertGardenPlanting(planting: PlantingEntity): Long

@@ -5,9 +5,10 @@ of plants in their garden from a huge cloud database (backed by Perenual). App t
 a plant.
 
 ## Screenshots
-| Mode  | Garden                                        | Plants                                        | Plant Details                                       |
-|-------|-----------------------------------------------|-----------------------------------------------|-----------------------------------------------------|
-| Light | <img src="screenshot/garden.jpg" width="250"> | <img src="screenshot/plants.jpg" width="250"> | <img src="screenshot/plant_detail.jpg" width="250"> |
+| Mode  | Garden                                             | Plants                                                 | Plant Details                                            |
+|-------|----------------------------------------------------|--------------------------------------------------------|----------------------------------------------------------|
+| Light | <img src="screenshot/garden.jpg" width="250">      | <img src="screenshot/plants.jpg" width="250">          | <img src="screenshot/plant_detail.jpg" width="250">      |
+| Dark  | <img src="screenshot/dark/garden.jpg" width="250"> | <img src="screenshot/dark/plant_list.jpg" width="250"> | <img src="screenshot/dark/plant_detail.jpg" width="250"> |
 
 ## Features
 
@@ -26,10 +27,8 @@ a more testable and flexible code.
 
 The core principles of the clean approach can be summarized as followed:
 
-1. The application code is separated into layers - These layers define the separation of concerns
-   inside the code base.
-2. The layers follow a strict dependency rule - Each layer can only interact with the layers below
-   it.
+1. The application code is separated into layers inside the code base.
+2. The layers follow a strict dependency rule, they can only interact with the layers below it.
 3. As we move toward the bottom layer — the code becomes generic - The bottom layers dictate
    policies and rules, and the upper layers dictate implementation details such as the database,
    networking manager, and UI.
@@ -94,7 +93,6 @@ High level folder structure looks like below
 
 ## Requirements
 
-https://perenual.com/
 
 ### Perenual API key
 
@@ -107,8 +105,18 @@ directory (usually `~/.gradle/gradle.properties` on Linux and Mac) or in the pro
 ```
 api_key=<your Perenual access key>
 ```
+### Google Map API key
 
-### Unsplash API key
+App uses the [Google Map API](https://developers.google.com/maps/documentation/android-sdk/get-api-key) to show dummy location of plant for now.
+
+Once you have the key, add this line to the `gradle.properties` file, either in your user home
+directory (usually `~/.gradle/gradle.properties` on Linux and Mac) or in the project's root folder:
+
+```
+map_api_key=<your Google map api key>
+```
+
+### Unsplash API key (optional)
 
 App uses the [Unsplash API](https://unsplash.com/developers) to load pictures on the gallery
 screen. To use the API, you will need to obtain a free developer API key. See the
@@ -125,8 +133,34 @@ The app is still usable without an API key, though you won't be able to navigate
 screen.
 
 
+## Installation Instruction
+For development, the latest version of Android Studio is required. The latest version can be
+downloaded from [here](https://developer.android.com/studio/).
 
-Additional resources
---------------------
-https://github.com/android/sunflower
+App uses [ktlint](https://ktlint.github.io/) to enforce Kotlin coding styles.
+Here's how to configure it for use with Android Studio (instructions adapted
+from the ktlint [README](https://github.com/shyiko/ktlint/blob/master/README.md)):
 
+- Close Android Studio if it's open
+
+- Download ktlint using these [installation instructions](https://github.com/pinterest/ktlint/blob/master/README.md#installation)
+
+- Apply ktlint settings to Android Studio using these [instructions](https://github.com/pinterest/ktlint/blob/master/README.md#-with-intellij-idea)
+
+- Start Android Studio
+
+
+## Todo
+
+- [ ] Implement local notifications to remind users about their plant watering schedule.
+- [ ] Showing location of plant on Map in plant detail screen.
+- [ ] Deep linking of plants
+- [ ] Code Quality
+  - [ ] Increase test coverage
+  - [ ] Fix Lint Error
+ 
+Third Party Content
+-------------------
+Select text used for describing the plants (in `plants.json`) are used from Wikipedia via CC BY-SA 3.0 US (license in `ASSETS_LICENSE`).
+
+"[seed](https://thenounproject.com/search/?q=seed&i=1585971)" by [Aisyah](https://thenounproject.com/aisyahalmasyira/) is licensed under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/us/legalcode)

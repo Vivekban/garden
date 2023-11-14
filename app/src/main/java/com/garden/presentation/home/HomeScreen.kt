@@ -29,15 +29,15 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -48,6 +48,7 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
@@ -60,14 +61,19 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.garden.R
+import com.garden.common.VoidCallback
 import com.garden.domain.model.Plant
 import com.garden.domain.model.PlantAndPlantings
 import com.garden.presentation.garden.GardenScreen
+import com.garden.presentation.helper.ConnectionState
+import com.garden.presentation.helper.currentConnectivityState
+import com.garden.presentation.helper.observeConnectivityAsFlow
 import com.garden.presentation.plantlist.PlantListScreen
-import com.garden.presentation.viewmodels.GardenPlantingListViewModel
-import com.garden.presentation.viewmodels.PlantListUiAction
-import com.garden.presentation.viewmodels.PlantListViewModel
+import com.garden.presentation.viewmodels.HomeUiAction
+import com.garden.presentation.viewmodels.HomeViewModel
+import com.garden.presentation.viewmodels.SearchingState
 import com.google.accompanist.themeadapter.material.MdcTheme
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 
 enum class GardenPage(
@@ -84,99 +90,133 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     onPlantClick: (Plant) -> Unit = {},
     onPageChange: (GardenPage) -> Unit = {},
-    plantListViewModel: PlantListViewModel = hiltViewModel()
+    homeViewModel: HomeViewModel = hiltViewModel()
 ) {
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState { GardenPage.values().size }
 
-    var isSearching by rememberSaveable {
-        mutableStateOf(false)
+    val uiState by homeViewModel.state.collectAsState()
+
+    // This will cause re-composition on every network state change
+    val connection by connectivityState()
+
+    val scaffoldState = rememberScaffoldState() // this contains the `SnackbarHostState`
+
+    val colors = MaterialTheme.colors
+    LaunchedEffect(key1 = connection) {
+        val info = when (connection === ConnectionState.Available) {
+            true -> Pair("Back Online", colors.primary)
+            else -> Pair("No internet connection", colors.error)
+        }
+
+        scaffoldState.snackbarHostState.showSnackbar(
+            message = info.first,
+        )
+
     }
-
-    val uiState by plantListViewModel.state.collectAsState()
 
     Scaffold(
         modifier = modifier,
+        scaffoldState = scaffoldState,
         topBar = {
             HomeTopAppBar(
                 pagerState = pagerState,
-                isSearching = isSearching,
-                searchQuery = uiState.query,
+                isSearching = uiState.query is SearchingState.Ongoing,
+                searchQuery = uiState.searchQuery(),
                 onSearchClick = {
-                    if (isSearching) {
-                        plantListViewModel.performAction(PlantListUiAction.Search(""))
-                    }
-                    isSearching = !isSearching
+                    homeViewModel.handleUiAction(HomeUiAction.UpdateSearchState(true))
                 }, onSearchQueryChanged = { query ->
-                    plantListViewModel.performAction(PlantListUiAction.Search(query))
+                    homeViewModel.handleUiAction(HomeUiAction.Search(query))
                 }, onSearchTriggered = { query ->
-                    plantListViewModel.performAction(PlantListUiAction.Search(query))
-                })
+                    homeViewModel.handleUiAction(HomeUiAction.Search(query))
+                }, onBackClick = {
+                    // resetting search
+                    homeViewModel.handleUiAction(HomeUiAction.Search(""))
+                    homeViewModel.handleUiAction(HomeUiAction.UpdateSearchState(false))
+                }
+
+            )
         }) { contentPadding ->
         HomePagerScreen(
             modifier = Modifier.padding(top = contentPadding.calculateTopPadding()),
             onPlantClick = onPlantClick,
             onPageChange = onPageChange,
-            plantListViewModel = plantListViewModel,
-            pagerState = pagerState
+            viewModel = homeViewModel,
+            pagerState = pagerState,
+            clearSearch = {
+                homeViewModel.handleUiAction(HomeUiAction.Search(""))
+            }
         )
     }
 
 }
 
+@ExperimentalCoroutinesApi
+@Composable
+fun connectivityState(): State<ConnectionState> {
+    val context = LocalContext.current
+
+    // Creates a State<ConnectionState> with current connectivity state as initial value
+    return produceState(initialValue = context.currentConnectivityState) {
+        // In a coroutine, can make suspend calls
+        context.observeConnectivityAsFlow().collect { value = it }
+    }
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomePagerScreen(
-    onPlantClick: (Plant) -> Unit,
-    onPageChange: (GardenPage) -> Unit,
     modifier: Modifier = Modifier,
     pages: Array<GardenPage> = GardenPage.values(),
-    gardenPlantingListViewModel: GardenPlantingListViewModel = hiltViewModel(),
-    plantListViewModel: PlantListViewModel = hiltViewModel(),
-    pagerState: PagerState
+    viewModel: HomeViewModel = hiltViewModel(),
+    pagerState: PagerState,
+    clearSearch: VoidCallback,
+    onPlantClick: (Plant) -> Unit,
+    onPageChange: (GardenPage) -> Unit,
 ) {
-    val gardenPlants by gardenPlantingListViewModel.plantAndPlantings.collectAsState(initial = emptyList())
-    val plants = plantListViewModel.pagingDataSource.collectAsLazyPagingItems()
-    val uiState by plantListViewModel.state.collectAsState()
+    val gardenPlants = viewModel.plantAndPlantingDataSource.collectAsLazyPagingItems()
+    val plants = viewModel.plantsPagingData.collectAsLazyPagingItems()
+    val uiState by viewModel.state.collectAsState()
 
     HomePagerScreen(
-        onPlantClick = onPlantClick,
-        onPageChange = onPageChange,
         modifier = modifier,
         pages = pages,
         gardenPlants = gardenPlants,
         plants = plants,
         pagerState = pagerState,
-        searchQuery = uiState.query
+        searchQuery = uiState.searchQuery(),
+        clearSearch = clearSearch,
+        onPlantClick = onPlantClick,
+        onPageChange = {
+            onPageChange(it)
+            viewModel.handleUiAction(HomeUiAction.PageChange(it))
+        },
     )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomePagerScreen(
-    onPlantClick: (Plant) -> Unit,
-    onPageChange: (GardenPage) -> Unit,
     modifier: Modifier = Modifier,
     pages: Array<GardenPage> = GardenPage.values(),
-    gardenPlants: List<PlantAndPlantings>,
+    gardenPlants: LazyPagingItems<PlantAndPlantings>,
     plants: LazyPagingItems<Plant>,
     pagerState: PagerState,
     searchQuery: String?,
+    clearSearch: VoidCallback,
+    onPlantClick: (Plant) -> Unit,
+    onPageChange: (GardenPage) -> Unit,
 ) {
 
     LaunchedEffect(pagerState.currentPage) {
         onPageChange(pages[pagerState.currentPage])
     }
 
-    // Use Modifier.nestedScroll + rememberNestedScrollInteropConnection() here so that this
-    // composable participates in the nested scroll hierarchy so that HomeScreen can be used in
-    // use cases like a collapsing toolbar
     Column(modifier.nestedScroll(rememberNestedScrollInteropConnection())) {
         val coroutineScope = rememberCoroutineScope()
 
         // Pages
         HorizontalPager(
             modifier = Modifier.weight(1f),
-            pageCount = pages.size,
             state = pagerState,
             verticalAlignment = Alignment.Top
         ) { index ->
@@ -185,6 +225,7 @@ fun HomePagerScreen(
                     GardenScreen(
                         gardenPlants = gardenPlants,
                         Modifier.fillMaxSize(),
+                        searchQuery = searchQuery,
                         onAddPlantClick = {
                             coroutineScope.launch {
                                 pagerState.scrollToPage(GardenPage.PLANT_LIST.ordinal)
@@ -192,7 +233,9 @@ fun HomePagerScreen(
                         },
                         onPlantClick = {
                             onPlantClick(it.plant)
-                        })
+                        },
+                        onClearSearchClick = clearSearch
+                    )
                 }
 
                 GardenPage.PLANT_LIST -> {
@@ -201,6 +244,7 @@ fun HomePagerScreen(
                         onPlantClick = onPlantClick,
                         modifier = Modifier.fillMaxSize(),
                         searchQuery = searchQuery,
+                        onClearSearchClick = clearSearch
                     )
                 }
             }
@@ -235,17 +279,18 @@ private fun HomeTopAppBar(
     pagerState: PagerState,
     isSearching: Boolean,
     onSearchClick: () -> Unit,
+    onBackClick: () -> Unit,
     onSearchQueryChanged: (String) -> Unit,
-    searchQuery: String = "",
+    searchQuery: String?,
     onSearchTriggered: (String) -> Unit,
 ) {
     if (isSearching) {
         SearchToolbar(
             modifier.statusBarsPadding(),
-            onBackClick = onSearchClick,
+            onBackClick = onBackClick,
             onSearchQueryChanged = onSearchQueryChanged,
             onSearchTriggered = onSearchTriggered,
-            searchQuery = searchQuery
+            searchQuery = searchQuery ?: ""
         )
     } else {
         TopAppBar(
@@ -261,17 +306,14 @@ private fun HomeTopAppBar(
             },
             modifier.statusBarsPadding(),
             actions = {
-
-                if (pagerState.currentPage == GardenPage.PLANT_LIST.ordinal) {
-                    IconButton(onClick = onSearchClick) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_search),
-                            contentDescription = stringResource(
-                                id = R.string.menu_search_plant
-                            ),
-                            tint = MaterialTheme.colors.onPrimary
-                        )
-                    }
+                IconButton(onClick = onSearchClick) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_search),
+                        contentDescription = stringResource(
+                            id = R.string.menu_search_plant
+                        ),
+                        tint = MaterialTheme.colors.onPrimary
+                    )
                 }
             },
             elevation = 0.dp

@@ -9,53 +9,107 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Text
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.garden.R
+import com.garden.common.ValueCallback
+import com.garden.common.VoidCallback
 import com.garden.domain.model.Plant
+import com.garden.presentation.helper.toUserFriendlyMessage
+import com.garden.presentation.view.EmptyListView
 
-
-//@Composable
-//fun PlantListScreen(
-//    onPlantClick: (Plant) -> Unit,
-//    modifier: Modifier = Modifier,
-//    viewModel: PlantListViewModel = hiltViewModel(),
-//) {
-//    val plants by viewModel.plants.observeAsState(initial = emptyList())
-//    PlantListScreen(plants = plants, modifier, onPlantClick = onPlantClick)
-//}
+/**
+ * This is used to determine number of column that can be shown in given space
+ */
+val idealTitleWidth: Dp = 180.dp
 
 @Composable
 fun PlantListScreen(
     modifier: Modifier = Modifier,
     plants: LazyPagingItems<Plant>,
     searchQuery: String?,
-    onPlantClick: (Plant) -> Unit = {},
+    onPlantClick: ValueCallback<Plant> = {},
+    onClearSearchClick: VoidCallback = {}
 ) {
     val context = LocalContext.current
     LaunchedEffect(key1 = plants.loadState) {
         if (plants.loadState.refresh is LoadState.Error) {
             Toast.makeText(
                 context,
-                (plants.loadState.refresh as LoadState.Error).error.message,
+                (plants.loadState.refresh as LoadState.Error).error.toUserFriendlyMessage(),
                 Toast.LENGTH_SHORT
             ).show()
         }
     }
 
+    var widthInDp by remember { mutableStateOf(IntSize.Zero.width.dp) }
+
+    val density = LocalDensity.current
+
+    Box(modifier = modifier
+        .fillMaxSize()
+        .onSizeChanged {
+            widthInDp = (it.width / density.density).toInt().dp
+        }) {
+        PlantList(modifier, plants, widthInDp, onPlantClick)
+
+        if (plants.loadState.refresh is LoadState.Loading) {
+            Box(modifier = modifier.fillMaxSize()) {
+                LoadingView(modifier = Modifier.align(Alignment.Center))
+            }
+        } else if (plants.itemSnapshotList.isEmpty() &&
+            (plants.loadState.refresh is LoadState.NotLoading || plants.loadState.append is LoadState.NotLoading)
+        ) {
+
+            val text = if ((searchQuery ?: "").isNotEmpty()) {
+                stringResource(R.string.no_plant_found_containing, searchQuery!!)
+            } else stringResource(R.string.no_plant_found)
+
+            EmptyListView(
+                modifier = modifier.fillMaxSize(),
+                text = text,
+                action = if ((searchQuery
+                        ?: "").isNotEmpty()
+                ) stringResource(id = R.string.clear_search) else null,
+                callback = onClearSearchClick
+            )
+        }
+    }
+
+}
+
+@Composable
+private fun PlantList(
+    modifier: Modifier,
+    plants: LazyPagingItems<Plant>,
+    availableWidth: Dp,
+    onPlantClick: ValueCallback<Plant>
+) {
+
+    val columns = (availableWidth / idealTitleWidth).toInt().coerceAtLeast(1)
+
     LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
         modifier = modifier.testTag("plant_list"),
+        columns = GridCells.Fixed(columns),
         contentPadding = PaddingValues(
             horizontal = dimensionResource(id = R.dimen.card_side_margin),
             vertical = dimensionResource(id = R.dimen.header_margin)
@@ -73,31 +127,15 @@ fun PlantListScreen(
 
         item(span = { GridItemSpan(2) }) {
             if (plants.loadState.append is LoadState.Loading) {
-                CircularProgressIndicator(Modifier.padding(dimensionResource(id = R.dimen.card_side_margin)))
+                LoadingView(modifier = Modifier.padding(dimensionResource(id = R.dimen.card_side_margin)))
             }
         }
     }
-
-    if (plants.loadState.refresh is LoadState.Loading) {
-        Box(modifier = modifier.fillMaxSize()) {
-            CircularProgressIndicator(
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-    } else if (plants.itemSnapshotList.isEmpty() &&
-        (plants.loadState.refresh is LoadState.NotLoading || plants.loadState.append is LoadState.NotLoading)
-    ) {
-        Box(modifier = modifier.fillMaxSize()) {
-            Text(
-                if ((searchQuery ?: "").isNotEmpty()) {
-                    stringResource(R.string.no_plant_found_containing, searchQuery!!)
-                } else stringResource(R.string.no_plant_found),
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-    }
-
 }
+
+@Composable
+fun LoadingView(modifier: Modifier) =
+    CircularProgressIndicator(modifier.testTag("loader"), color = MaterialTheme.colors.onBackground)
 
 //@Preview
 //@Composable

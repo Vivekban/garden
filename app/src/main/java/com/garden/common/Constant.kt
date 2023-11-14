@@ -1,5 +1,7 @@
 package com.garden.common
 
+import com.google.android.gms.maps.model.LatLng
+
 object Constant {
 
     const val BASE_URL = "https://perenual.com/api/"
@@ -39,5 +41,15 @@ object Constant {
      * This avoid hitting api multiple time while user types search query.
      */
     const val SEARCH_DEBOUNCE_TIME_MS: Long = 600
+
+    /**
+     * Dummy location to show on map
+     */
+    val MISSISSAUGA = LatLng(43.58, -79.64)
+
+    /**
+     * Dummy support number
+     */
+    const val SUPPORT_PHONE_NUMBER = "18662223456"
 
 }

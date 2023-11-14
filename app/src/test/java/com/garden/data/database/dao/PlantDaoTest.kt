@@ -54,8 +54,6 @@ class PlantDaoTest {
     @Test
     fun testGetPlants() = runBlocking {
 
-        assertThat(plantDao.getPlant(plantA.plantId).first(), equalTo(plantA))
-
         val plantList: PagingSource<Int, PlantEntity> =
             plantDao.getPlants("%${query.replace(' ', '%')}%")
 

@@ -20,7 +20,7 @@ import com.garden.R
 import com.garden.data.dto.UnsplashPhotoDto
 import com.garden.domain.model.Plant
 import com.garden.ui.theme.card
-import com.garden.ui.utils.GardenImage
+import com.garden.ui.utils.NetworkImage
 
 @Composable
 fun PlantListItem(plant: Plant, onClick: () -> Unit) {
@@ -44,7 +44,7 @@ fun ImageListItem(name: String, imageUrl: String?, onClick: () -> Unit) {
             .padding(bottom = dimensionResource(id = R.dimen.card_bottom_margin))
     ) {
         Column(Modifier.fillMaxWidth()) {
-            GardenImage(
+            NetworkImage(
                 model = imageUrl,
                 contentDescription = stringResource(R.string.a11y_plant_item_image),
                 Modifier

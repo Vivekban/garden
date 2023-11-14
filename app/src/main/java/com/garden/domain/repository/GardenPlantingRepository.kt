@@ -1,5 +1,6 @@
 package com.garden.domain.repository
 
+import androidx.paging.PagingData
 import com.garden.domain.model.PlantAndPlantings
 import com.garden.domain.model.Planting
 import kotlinx.coroutines.flow.Flow
@@ -12,7 +13,7 @@ interface GardenPlantingRepository {
 
     fun isPlanted(plantId: Int): Flow<Boolean>
 
-    fun getPlantedGardens(): Flow<List<PlantAndPlantings>>
+    fun getPlantedGardens(query: String?): Flow<PagingData<PlantAndPlantings>>
 
 }
 

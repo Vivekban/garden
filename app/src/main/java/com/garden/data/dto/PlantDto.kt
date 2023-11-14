@@ -2,6 +2,7 @@ package com.garden.data.dto
 
 
 import com.garden.common.Constant
+import com.garden.fake.model.testPlantDescription
 import com.google.gson.annotations.SerializedName
 
 /**
@@ -14,6 +15,9 @@ data class PlantDto(
     @SerializedName("common_name")
     val name: String,
 
+    @SerializedName("description")
+    val description: String?,
+
     @SerializedName("cycle")
     val cycle: String?,
 
@@ -24,9 +28,9 @@ data class PlantDto(
     val watering: WateringNeed?
 ) {
 
-    // TODO: Plant description isn't coming from API need to add dummy one.
     fun generateDescription(): String {
-        return "This is short description"
+        //TODO: testPlantDescription
+        return description ?: testPlantDescription
     }
 
     fun growZoneNumber() = id % Constant.MAX_GROWING_ZONES

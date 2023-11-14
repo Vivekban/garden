@@ -91,11 +91,12 @@ class PlantRemoteMediator(
 
             return MediatorResult.Success(endOfPaginationReached = result.data?.isEmpty() ?: true)
 
-        }catch (exception: Exception) {
-            when(exception) {
-                is IOException, is HttpException, is JsonSyntaxException-> {
+        } catch (exception: Exception) {
+            when (exception) {
+                is IOException, is HttpException, is JsonSyntaxException -> {
                     return MediatorResult.Error(exception)
                 }
+
                 else -> throw exception
             }
         }
@@ -105,7 +106,7 @@ class PlantRemoteMediator(
     private suspend fun getRemoteKeyForLastItem(state: PagingState<Int, PlantEntity>): RemoteKeysEntity? {
         // Get the last page that was retrieved, that contained items.
         // From that last page, get the last item
-        return state.pages.lastOrNull() { it.data.isNotEmpty() }?.data?.lastOrNull()
+        return state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()
             ?.let { repo ->
                 // Get the remote keys of the last item retrieved
                 remoteKeysLocalDataSource.remoteKeysRepoId(repo.plantId)

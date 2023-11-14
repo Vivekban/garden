@@ -1,4 +1,5 @@
 
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -19,14 +20,18 @@ android {
         versionName = "0.1.6"
         vectorDrawables.useSupportLibrary = true
 
-        // Consult the README on instructions for setting up Unsplash API key
+        // Consult the README on instructions for setting up API key
         buildConfigField("String", "UNSPLASH_ACCESS_KEY", "\"" + getUnsplashAccess() + "\"")
         buildConfigField("String", "API_KEY", "\"" + getApiKey() + "\"")
+
+        manifestPlaceholders["MAP_API_KEY"] = "${getMapApiKey()}"
+
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments["dagger.hilt.disableModulesHaveInstallInCheck"] = "true"
             }
         }
+
     }
 
 
@@ -129,6 +134,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.glide)
     implementation(libs.accompanist.systemuicontroller)
+    implementation(libs.maps.compose)
+    implementation(libs.accompanist.permissions)
 
 
     debugImplementation(libs.androidx.compose.ui.tooling)
@@ -153,6 +160,7 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.mockwebserver)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.kotlinx.coroutines.android)
     testImplementation(libs.hilt.android.testing)
     testImplementation(libs.androidx.arch.core.testing)
     testImplementation(libs.androidx.core)
@@ -170,3 +178,6 @@ fun getApiKey(): String? {
     return project.findProperty("api_key") as? String
 }
 
+fun getMapApiKey(): String? {
+    return project.findProperty("map_api_key") as? String
+}

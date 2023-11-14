@@ -51,7 +51,7 @@ class PlantDetailViewModelTest {
         appDatabase = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
 
         val savedStateHandle: SavedStateHandle = SavedStateHandle().apply {
-            set("plantId", testPlant.id.toString())
+            set("plantId", testPlant.id)
         }
         viewModel =
             PlantDetailViewModel(savedStateHandle, plantRepository, gardenPlantingRepository)
@@ -62,10 +62,10 @@ class PlantDetailViewModelTest {
         appDatabase.close()
     }
 
-    @Suppress("BlockingMethodInNonBlockingContext")
     @Test
     @Throws(InterruptedException::class)
     fun testDefaultValues() = coroutineRule.runBlockingTest {
-        assertFalse(viewModel.isPlanted.first())
+        val result = viewModel.isPlanted.first()
+        assertFalse(result)
     }
 }

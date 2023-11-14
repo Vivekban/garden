@@ -16,7 +16,7 @@
     <string name="plant_date_header" translation_description="Text that is shown on each plant on the 'My Garden' screen which says the word Planted to show date of planting below">Planted</string>
     <string name="watered_date_header" translation_description="Text that is shown on each plant on the 'My Garden' screen which says the word Last Watered to show date of last watering below">Last Watered</string>
     <string name="menu_item_share_plant" translation_description="The label for the Share menu item">Share</string>
-    <string name="share_text_plant" translation_description="The default messaged used when sharing a plant on SNS, etc.">Check out the %s plant in the Android Sunflower app</string>
+    <string name="share_text_plant" translation_description="The default messaged used when sharing a plant on SNS, etc.">Check out the %s plant in the Garden app</string>
     <string name="gallery_title" translation_description="Title for the photo gallery screen">Photos by Unsplash</string>
 
     <!-- String plurals and their related prefix / suffix strings -->
@@ -39,6 +39,8 @@
     <string name="back" translatable="false">Back</string>
     <string name="clear_search_text_content_desc" translatable="false">Clear search text</string>
     <string name="no_plant_found" translatable="false">No plant found</string>
-    <string name="no_plant_found_containing" translatable="false">No plant found containing %1$s</string>
+    <string name="no_plant_found_containing" translatable="false">No plants found matching "%1$s"</string>
+    <string name="clear_search">Clear search</string>
+    <string name="menu_item_call">Call\n</string>
 
 </resources>

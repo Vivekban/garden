@@ -2,14 +2,17 @@ package com.garden.data.database.dao
 
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.paging.PagingSource
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import com.garden.common.Constant
 import com.garden.data.database.AppDatabase
+import com.garden.data.entity.PlantAndPlantingsEntity
 import com.garden.data.entity.PlantingEntity
 import com.garden.data.mappers.toEntity
-import com.garden.domain.model.Planting
 import com.garden.fake.model.testCalendar
 import com.garden.fake.model.testPlant
+import com.garden.fake.model.testPlantAndGardenPlanting
 import com.garden.fake.model.testPlanting
 import com.garden.fake.model.testPlants
 import kotlinx.coroutines.flow.first
@@ -34,6 +37,8 @@ class GardenPlantingDaoTest {
 
     @get:Rule
     var instantTaskExecutorRule = InstantTaskExecutorRule()
+
+    private val query = ""
 
     @Before
     fun createDb() = runBlocking {
@@ -90,13 +95,25 @@ class GardenPlantingDaoTest {
 
     @Test
     fun testGetPlantAndGardenPlantings() = runBlocking {
-        val plantAndGardenPlantings = plantingDao.getPlantedGardens().first()
-        assertThat(plantAndGardenPlantings.size, equalTo(1))
 
-        /**
-         * Only the [testPlant] has been planted, and thus has an associated [Planting]
-         */
-        assertThat(plantAndGardenPlantings[0].plant, equalTo(testPlant.toEntity()))
-        assertThat(plantAndGardenPlantings[0].plantings.size, equalTo(1))
+        val plantingList: PagingSource<Int, PlantAndPlantingsEntity> =
+            plantingDao.getPlantedGardens("%${query.replace(' ', '%')}%")
+
+        val expectedResult = PagingSource.LoadResult.Page(
+            data = listOf(testPlantAndGardenPlanting.toEntity()),
+            prevKey = null,
+            nextKey = null,
+        )
+
+        val result = plantingList.load(
+            PagingSource.LoadParams.Refresh(
+                key = 0,
+                loadSize = Constant.ITEMS_PER_PAGE,
+                placeholdersEnabled = false
+            )
+        )
+
+        assertThat((result as PagingSource.LoadResult.Page).data, equalTo(expectedResult.data))
+
     }
 }

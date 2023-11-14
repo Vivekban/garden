@@ -44,7 +44,7 @@ class PlantDetailComposeTest {
             PlantDetails(
                 plant = plantForTesting(),
                 isPlanted = isPlanted,
-                callbacks = PlantDetailsCallbacks({ }, { }, { }),
+                callbacks = PlantDetailsCallbacks({ }, { }, { }, {}),
             )
         }
     }

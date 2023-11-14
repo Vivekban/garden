@@ -37,7 +37,7 @@ val testCalendar: Calendar = Calendar.getInstance().apply {
 /**
  * [Planting] object used for tests.
  */
-val testPlanting = Planting(1, testPlant.id.toString(), testCalendar, testCalendar)
+val testPlanting = Planting(1, testPlant.id, testCalendar, testCalendar)
 
 /**
  * [PlantAndPlantingsEntity] object used for tests.

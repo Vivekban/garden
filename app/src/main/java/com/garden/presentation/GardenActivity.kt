@@ -6,14 +6,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import com.garden.BuildConfig
-import com.garden.presentation.viewmodels.PlantListViewModel
+import com.garden.presentation.viewmodels.HomeViewModel
 import com.google.accompanist.themeadapter.material.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class GardenActivity : ComponentActivity() {
 
-    private val viewModel: PlantListViewModel by viewModels()
+    private val viewModel: HomeViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +33,7 @@ class GardenActivity : ComponentActivity() {
         setContent {
             MdcTheme {
                 GardenApp(
-                    plantListViewModel = viewModel,
+                    homeViewModel = viewModel,
                 )
             }
         }

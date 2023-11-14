@@ -1,28 +1,34 @@
 package com.garden.presentation.garden
 
-import androidx.activity.compose.ReportDrawn
-import androidx.compose.foundation.layout.Arrangement
+import android.widget.Toast
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -31,41 +37,116 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.garden.R
+import com.garden.common.VoidCallback
 import com.garden.domain.model.Plant
 import com.garden.domain.model.PlantAndPlantings
 import com.garden.domain.model.Planting
+import com.garden.presentation.plantlist.LoadingView
+import com.garden.presentation.view.EmptyListView
 import com.garden.presentation.viewmodels.PlantAndGardenPlantingsViewModel
 import com.garden.ui.theme.card
-import com.garden.ui.utils.GardenImage
+import com.garden.ui.utils.NetworkImage
 import com.google.accompanist.themeadapter.material.MdcTheme
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import java.util.*
+
+/**
+ * This is used to determine number of column that can be shown in given space
+ */
+val idealTitleWidth: Dp = 180.dp
 
 @Composable
 fun GardenScreen(
-    gardenPlants: List<PlantAndPlantings>,
+    gardenPlants: LazyPagingItems<PlantAndPlantings>,
     modifier: Modifier = Modifier,
+    searchQuery: String? = null,
     onAddPlantClick: () -> Unit = {},
-    onPlantClick: (PlantAndPlantings) -> Unit = {}
+    onPlantClick: (PlantAndPlantings) -> Unit = {},
+    onClearSearchClick: VoidCallback = {}
 ) {
-    if (gardenPlants.isEmpty()) {
-        EmptyGarden(onAddPlantClick, modifier)
-    } else {
-        GardenList(gardenPlants = gardenPlants, onPlantClick = onPlantClick, modifier = modifier)
+
+    val context = LocalContext.current
+    LaunchedEffect(key1 = gardenPlants.loadState) {
+        if (gardenPlants.loadState.refresh is LoadState.Error) {
+            Toast.makeText(
+                context,
+                (gardenPlants.loadState.refresh as LoadState.Error).error.message,
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
+    var widthInDp by remember { mutableStateOf(IntSize.Zero.width.dp) }
+    val density = LocalDensity.current
+
+    Box(
+        modifier
+            .fillMaxSize()
+            .onSizeChanged {
+                widthInDp = (it.width / density.density).toInt().dp
+            }) {
+        GardenList(
+            gardenPlants = gardenPlants,
+            onPlantClick = onPlantClick,
+            modifier = modifier.fillMaxSize(),
+            availableWidth = widthInDp
+        )
+
+        if (gardenPlants.loadState.refresh is LoadState.Loading) {
+            LoadingView(modifier = Modifier.align(Alignment.Center))
+        } else if (gardenPlants.itemSnapshotList.isEmpty() &&
+            (gardenPlants.loadState.refresh is LoadState.NotLoading || gardenPlants.loadState.append is LoadState.NotLoading)
+        ) {
+            if (searchQuery?.isNotEmpty() == true) {
+                EmptyListView(
+                    modifier = modifier.fillMaxSize(),
+                    text = stringResource(R.string.no_plant_found_containing, searchQuery),
+                    action = stringResource(id = R.string.clear_search),
+                    callback = onClearSearchClick
+                )
+            } else {
+                EmptyGarden(
+                    modifier = modifier.fillMaxSize(),
+                    onAddPlantClick = onAddPlantClick
+                )
+            }
+        }
+    }
+
+}
+
+@Composable
+private fun EmptyGarden(onAddPlantClick: () -> Unit, modifier: Modifier = Modifier) {
+
+    EmptyListView(
+        modifier = modifier,
+        text = stringResource(id = R.string.garden_empty),
+        action = stringResource(id = R.string.add_plant),
+        callback = onAddPlantClick
+    )
 }
 
 @Composable
 private fun GardenList(
-    gardenPlants: List<PlantAndPlantings>,
-    onPlantClick: (PlantAndPlantings) -> Unit,
     modifier: Modifier = Modifier,
+    gardenPlants: LazyPagingItems<PlantAndPlantings>,
+    availableWidth: Dp,
+    onPlantClick: (PlantAndPlantings) -> Unit,
 ) {
+    val columns = (availableWidth / idealTitleWidth).toInt().coerceAtLeast(1)
+
     // Call reportFullyDrawn when the garden list has been rendered
     val gridState = rememberLazyGridState()
     LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
+        columns = GridCells.Fixed(columns),
         modifier,
         state = gridState,
         contentPadding = PaddingValues(
@@ -74,10 +155,18 @@ private fun GardenList(
         )
     ) {
         items(
-            items = gardenPlants,
-            key = { it.plant.id }
-        ) {
-            GardenListItem(plant = it, onPlantClick = onPlantClick)
+            gardenPlants.itemCount,
+        ) { index ->
+            gardenPlants[index]?.let {
+                GardenListItem(plant = it, onPlantClick = onPlantClick)
+            }
+        }
+
+        // Loader at the end of the list
+        item(span = { GridItemSpan(2) }) {
+            if (gardenPlants.loadState.append is LoadState.Loading) {
+                LoadingView(modifier = Modifier.padding(dimensionResource(id = R.dimen.card_side_margin)))
+            }
         }
     }
 }
@@ -107,7 +196,7 @@ private fun GardenListItem(
         shape = MaterialTheme.shapes.card,
     ) {
         Column(Modifier.fillMaxWidth()) {
-            GardenImage(
+            NetworkImage(
                 model = vm.imageUrl,
                 contentDescription = plant.plant.description,
                 Modifier
@@ -168,71 +257,44 @@ private fun GardenListItem(
     }
 }
 
-@Composable
-private fun EmptyGarden(onAddPlantClick: () -> Unit, modifier: Modifier = Modifier) {
-    // Calls reportFullyDrawn when this composable is composed.
-    ReportDrawn()
-
-    Column(
-        modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = stringResource(id = R.string.garden_empty),
-            style = MaterialTheme.typography.h5
-        )
-        Button(
-            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.onPrimary),
-            shape = RoundedCornerShape(
-                topStart = 0.dp,
-                topEnd = dimensionResource(id = R.dimen.button_corner_radius),
-                bottomStart = dimensionResource(id = R.dimen.button_corner_radius),
-                bottomEnd = 0.dp,
-            ),
-            onClick = onAddPlantClick
-        ) {
-            Text(
-                color = MaterialTheme.colors.primary,
-                text = stringResource(id = R.string.add_plant)
-            )
-        }
-    }
-}
-
 @Preview
 @Composable
 private fun GardenScreenPreview(
-    @PreviewParameter(GardenScreenPreviewParamProvider::class) gardenPlants: List<PlantAndPlantings>
+    @PreviewParameter(GardenScreenPreviewParamProvider::class) gardenPlants: Flow<PagingData<PlantAndPlantings>>
 ) {
     MdcTheme {
-        GardenScreen(gardenPlants)
+        GardenScreen(gardenPlants.collectAsLazyPagingItems())
     }
 }
 
 private class GardenScreenPreviewParamProvider :
-    PreviewParameterProvider<List<PlantAndPlantings>> {
-    override val values: Sequence<List<PlantAndPlantings>> =
+    PreviewParameterProvider<Flow<PagingData<PlantAndPlantings>>> {
+    override val values: Sequence<Flow<PagingData<PlantAndPlantings>>> =
         sequenceOf(
-            emptyList(),
-            listOf(
-                PlantAndPlantings(
-                    plant = Plant(
-                        id = 1,
-                        name = "Apple",
-                        description = "An apple.",
-                        growZoneNumber = 1,
-                        wateringInterval = 2,
-                        imageUrl = "https://images.unsplash.com/photo-1417325384643-aac51acc9e5d?q=75&fm=jpg&w=400&fit=max",
-                    ),
-                    plantings = listOf(
-                        Planting(
-                            plantId = 1,
-                            plantDate = Calendar.getInstance(),
-                            lastWateringDate = Calendar.getInstance()
+            flowOf(PagingData.from(listOf())),
+            flowOf(
+                PagingData.from(
+                    listOf(
+                        PlantAndPlantings(
+                            plant = Plant(
+                                id = 1,
+                                name = "Apple",
+                                description = "An apple.",
+                                growZoneNumber = 1,
+                                wateringInterval = 2,
+                                imageUrl = "https://images.unsplash.com/photo-1417325384643-aac51acc9e5d?q=75&fm=jpg&w=400&fit=max",
+                            ),
+                            plantings = listOf(
+                                Planting(
+                                    plantId = 1,
+                                    plantDate = Calendar.getInstance(),
+                                    lastWateringDate = Calendar.getInstance()
+                                )
+                            )
                         )
+
                     )
                 )
-            )
+            ),
         )
 }
