@@ -18,7 +18,11 @@ a plant.
 4. **Auto Sync**: Uses both NetworkConnectivityStream and WorkManager to ensure data is always
    up-to-date.
 
-## Clean Architecture
+
+# Architecture Layers
+More on this [Offical Doc](https://developer.android.com/topic/architecture)
+
+### 1. Clean Architecture
 
 Clean architecture promotes separation of concerns, making the code loosely coupled. This results in
 a more testable and flexible code.
@@ -43,16 +47,98 @@ The 3 modules of architecture are :
   It contains the implementations of the repositories declared in the domain layer. It may, for
   example, check if the data in a database is up to date, and retrieve it from service if it’s not.
 
-# Architecture Layers
-
-The app uses clean architecture with MVVM(Model View View Model) design pattern. MVVM provides
+### 2. _MVVM
+The_ app uses clean architecture with MVVM(Model View View Model) design pattern. MVVM provides
 better separation of concern, easier testing, lifecycle awareness, etc.
 
 ![](screenshot/MVVM_Flow.png)
 
+### 3. Paging 3
+The Paging library includes the following features:
+
+- In-memory caching for your paged data. This helps ensure that your app uses system resources efficiently while working with paged data.
+- Built-in request deduplication, which helps ensure that your app uses network bandwidth and system resources efficiently.
+- Support for Kotlin coroutines and flows as well as LiveData and RxJava.
+- Built-in support for error handling, including refresh and retry capabilities.
+
+![](screenshot/paging3.webp)
+
+
 ## Folder Structure
-High level folder structure looks like below
-![Folder Structure](screenshot/folder_structure.png)
+
+When using Clean Architecture with Jetpack Compose in an Android app, we can adopt a hybrid approach that incorporates both the feature-based and layer-based structuring.
+This allows us to leverage the benefits of Clean Architecture and accommodate the UI-centric nature of Jetpack Compose. Here's a suggested folder structure:
+Folder structure is important for scalability and readability
+
+
+    |-- garden
+       |-- MainApplication.kt
+       |-- common
+       |-- data
+       |   |-- api
+       |   |   |-- ApiClient.kt
+       |   |   |-- PlantService.kt
+       |   |-- database
+       |   |   |-- AppDatabase.kt
+       |   |   |-- Converters.kt
+       |   |   |-- DatabaseUtility.kt
+       |   |   |-- dao
+       |   |   |   |-- PlantDao.kt
+       |   |   |-- workers
+       |   |   |   |-- SeedDatabaseWorker.kt
+       |   |-- datasource
+       |   |   |-- local
+       |   |   |   |-- PlantLocalDataSource.kt
+       |   |   |   |-- RemoteKeysLocalDataSource.kt
+       |   |   |   |-- impl
+       |   |   |   |   |-- PlantLocalDataSourceImpl.kt
+       |   |   |-- remote
+       |   |   |   |-- PlantRemoteDataSource.kt
+       |   |   |   |-- impl
+       |   |   |   |   |-- PlantRemoteDataSourceImpl.kt
+       |   |   |   |-- mediator
+       |   |   |   |   |-- PlantRemoteMediator.kt
+       |   |-- dto
+       |   |   |-- PlantDto.kt
+       |   |-- entity
+       |   |   |-- PlantEntity.kt
+       |   |-- mappers
+       |   |   |-- PlantMapper.kt
+       |   |-- repository
+       |   |   |-- PlantRepositoryImpl.kt
+       |-- di
+       |   |-- DataModule.kt
+       |   |-- DatabaseModule.kt
+       |   |-- NetworkModule.kt
+       |-- domain
+       |   |-- model
+       |   |   |-- Plant.kt
+       |   |-- repository
+       |   |   |-- PlantRepository.kt
+       |   |-- usecase
+       |   |   |-- plant
+       |   |   |   |-- GetPlantsUsecase.kt
+       |-- fake
+       |   |-- model
+       |   |   |-- FakeModels.kt
+       |-- presentation
+       |   |-- GardenActivity.kt
+       |   |-- GardenApp.kt
+       |   |-- helper
+       |   |   |-- ExceptionHelper.kt
+       |   |   |-- NetworkHelper.kt
+       |   |-- home
+       |   |   |-- HomeScreen.kt
+       |   |-- plantlist
+       |   |   |-- PlantListScreen.kt
+       |   |-- view
+       |   |-- viewmodels
+       |   |   |-- HomeViewModel.kt
+
+
+- High level folder structure looks like below
+
+<img src="screenshot/folder_structure.png" width="300">
 
 ## Built With 🛠
 
@@ -159,8 +245,14 @@ from the ktlint [README](https://github.com/shyiko/ktlint/blob/master/README.md)
   - [ ] Increase test coverage
   - [ ] Fix Lint Error
  
-Third Party Content
+
+## Additional Resources
+- [Android App Architecture] (https://developer.android.com/topic/architecture)
+- [Clean Architecture Uncle Bob] (https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+
+## Third Party Content
 -------------------
+
 Select text used for describing the plants (in `plants.json`) are used from Wikipedia via CC BY-SA 3.0 US (license in `ASSETS_LICENSE`).
 
 "[seed](https://thenounproject.com/search/?q=seed&i=1585971)" by [Aisyah](https://thenounproject.com/aisyahalmasyira/) is licensed under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/us/legalcode)
