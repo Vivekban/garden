@@ -13,6 +13,9 @@ import com.garden.R
  */
 object Dimens {
 
+    val PaddingExtraSmall: Dp
+        @Composable get() = dimensionResource(R.dimen.margin_extra_small)
+
     val PaddingSmall: Dp
         @Composable get() = dimensionResource(R.dimen.margin_small)
 

@@ -1,15 +1,25 @@
 package com.garden.data.datasource.remote
 
-import com.garden.data.database.dao.PlantDao
+import com.garden.common.Constant
+import com.garden.data.dto.PlantDto
 import com.garden.data.dto.PlantListDto
 
 /**
- * Repository module for handling data operations.
- *
- * Collecting from the Flows in [PlantDao] is main-safe. Room supports Coroutines and moves the
- * query execution off of the main thread.
+ * Responsible for providing plant related information from cloud.
  */
 interface PlantRemoteDataSource {
+
+    /**
+     * Fetches list of plants ordered by id, page size is [Constant.ITEMS_PER_PAGE]
+     *
+     * @param query search plants by name
+     * @param page for pagination, start from [Constant.PAGE_STARTING_INDEX]
+     */
     suspend fun getPlants(query: String?, page: Int): PlantListDto
+
+    /**
+     * Fetch single plant based on its [id]
+     */
+    suspend fun getPlant(id: Int): PlantDto
 
 }

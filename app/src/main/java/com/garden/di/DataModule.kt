@@ -1,8 +1,10 @@
 package com.garden.di
 
 import com.garden.data.datasource.local.PlantLocalDataSource
+import com.garden.data.datasource.local.PlantingLocalDataSource
 import com.garden.data.datasource.local.RemoteKeysLocalDataSource
 import com.garden.data.datasource.local.impl.PlantLocalDataSourceImpl
+import com.garden.data.datasource.local.impl.PlantingLocalDataSourceImpl
 import com.garden.data.datasource.local.impl.RemoteKeysLocalDataSourceImpl
 import com.garden.data.datasource.remote.PlantRemoteDataSource
 import com.garden.data.datasource.remote.impl.PlantRemoteDataSourceImpl
@@ -31,6 +33,10 @@ abstract class DataModule {
     @Singleton
     @Binds
     abstract fun providePlantRemoteDataSource(dataSource: PlantRemoteDataSourceImpl): PlantRemoteDataSource
+
+    @Singleton
+    @Binds
+    abstract fun providePlantingRemoteDataSource(dataSource: PlantingLocalDataSourceImpl): PlantingLocalDataSource
 
     @Singleton
     @Binds

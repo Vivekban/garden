@@ -6,7 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.garden.BuildConfig
+import com.garden.common.asResult
 import com.garden.data.repository.GardenPlantingRepositoryImpl
 import com.garden.data.repository.PlantRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * The ViewModel used in [PlantDetail].
+ * The ViewModel used in PlantDetail.
  */
 @HiltViewModel
 class PlantDetailViewModel @Inject constructor(
@@ -26,7 +26,7 @@ class PlantDetailViewModel @Inject constructor(
     val plantId: Int = savedStateHandle.get<Int>(PLANT_ID_SAVED_STATE_KEY)!!
 
     val isPlanted = gardenPlantingRepository.isPlanted(plantId)
-    val plant = plantRepository.getPlant(plantId).asLiveData()
+    val plant = plantRepository.getPlant(plantId).asResult().asLiveData()
 
     private val _showSnackbar = MutableLiveData(false)
     val showSnackbar: LiveData<Boolean>
@@ -42,8 +42,6 @@ class PlantDetailViewModel @Inject constructor(
     fun dismissSnackbar() {
         _showSnackbar.value = false
     }
-
-    fun hasValidUnsplashKey() = (BuildConfig.UNSPLASH_ACCESS_KEY != "null")
 
     companion object {
         private const val PLANT_ID_SAVED_STATE_KEY = "plantId"

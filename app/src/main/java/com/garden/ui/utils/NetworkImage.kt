@@ -29,7 +29,7 @@ import com.bumptech.glide.integration.compose.placeholder
  */
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun GardenImage(
+fun NetworkImage(
     model: Any?,
     contentDescription: String?,
     modifier: Modifier = Modifier,
@@ -61,6 +61,6 @@ fun GardenImage(
             Box(modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 Icon(Icons.Default.Warning, "Error")
             }
-        }
+        },
     )
 }
