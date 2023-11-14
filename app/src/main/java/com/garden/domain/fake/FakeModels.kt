@@ -1,4 +1,4 @@
-package com.garden.fake.model
+package com.garden.domain.fake
 
 
 import com.garden.data.entity.PlantAndPlantingsEntity

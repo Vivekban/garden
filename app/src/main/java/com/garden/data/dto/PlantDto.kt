@@ -2,7 +2,7 @@ package com.garden.data.dto
 
 
 import com.garden.common.Constant
-import com.garden.fake.model.testPlantDescription
+import com.garden.domain.fake.testPlantDescription
 import com.google.gson.annotations.SerializedName
 
 /**

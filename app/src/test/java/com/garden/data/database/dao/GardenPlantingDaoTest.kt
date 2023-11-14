@@ -10,11 +10,11 @@ import com.garden.data.database.AppDatabase
 import com.garden.data.entity.PlantAndPlantingsEntity
 import com.garden.data.entity.PlantingEntity
 import com.garden.data.mappers.toEntity
-import com.garden.fake.model.testCalendar
-import com.garden.fake.model.testPlant
-import com.garden.fake.model.testPlantAndGardenPlanting
-import com.garden.fake.model.testPlanting
-import com.garden.fake.model.testPlants
+import com.garden.domain.fake.testCalendar
+import com.garden.domain.fake.testPlant
+import com.garden.domain.fake.testPlantAndGardenPlanting
+import com.garden.domain.fake.testPlanting
+import com.garden.domain.fake.testPlants
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.equalTo
