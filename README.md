@@ -5,10 +5,10 @@ of plants in their garden from a huge cloud database (backed by Perenual). App t
 a plant.
 
 ## Screenshots
-| Mode  | Garden                                             | Plants                                                 | Plant Details                                            |
-|-------|----------------------------------------------------|--------------------------------------------------------|----------------------------------------------------------|
-| Light | <img src="screenshot/garden.jpg" width="250">      | <img src="screenshot/plants.jpg" width="250">          | <img src="screenshot/plant_detail.jpg" width="250">      |
-| Dark  | <img src="screenshot/dark/garden.jpg" width="250"> | <img src="screenshot/dark/plant_list.jpg" width="250"> | <img src="screenshot/dark/plant_detail.jpg" width="250"> |
+| Mode  | Garden                                              | Plants                                                 | Plant Details                                             |
+|-------|-----------------------------------------------------|--------------------------------------------------------|-----------------------------------------------------------|
+| Light | <img src="screenshot/light/garden.jpg" width="250"> | <img src="screenshot/light/plants.jpg" width="250">    | <img src="screenshot/light/plant_detail.jpg" width="250"> |
+| Dark  | <img src="screenshot/dark/garden.jpg" width="250">  | <img src="screenshot/dark/plant_list.jpg" width="250"> | <img src="screenshot/dark/plant_detail.jpg" width="250">  |
 
 ## Features
 
@@ -26,7 +26,7 @@ a plant.
 Clean architecture promotes separation of concerns, making the code loosely coupled. This results in
 a more testable and flexible code.
 
-![](screenshot/clean_arch.png)
+![](screenshot/clean_arch.jpg)
 
 The core principles of the clean approach can be summarized as followed:
 
@@ -50,7 +50,7 @@ The 3 modules of architecture are :
 The_ app uses clean architecture with MVVM(Model View View Model) design pattern. MVVM provides
 better separation of concern, easier testing, lifecycle awareness, etc.
 
-![](screenshot/MVVM_Flow.png)
+![](screenshot/MVVM_Flow.jpg)
 
 ### 3. Paging 
 For pagination Paging3 library is used which has the following features:
@@ -60,9 +60,14 @@ For pagination Paging3 library is used which has the following features:
 - Support for Kotlin coroutines and flows as well as LiveData and RxJava.
 - Built-in support for error handling, including refresh and retry capabilities.
 
-Data flow with Paging integration will look like below. Important point to note is that the local database will act as a single source of truth,
-means first data from remote will be added/updated to db then from db itself final information will be passed.  
-![](screenshot/paging3.webp)
+
+Data flow with Paging integration will look like below.
+
+![](screenshot/paging3.jpg)
+
+Few points to note
+- Local database will act as a single source of truth any remote information will be added/updated on local database.
+- Remote Mediator is only required if information has cloud source.
 
 More on Architecture [here](https://developer.android.com/topic/architecture)
 
@@ -72,7 +77,6 @@ More on Architecture [here](https://developer.android.com/topic/architecture)
 When using Clean Architecture with Jetpack Compose in an Android app, we can adopt a hybrid approach that incorporates both the feature-based and layer-based structuring.
 This allows us to leverage the benefits of Clean Architecture and accommodate the UI-centric nature of Jetpack Compose. Here's a suggested folder structure:
 Folder structure is important for scalability and readability
-
 
     |-- garden
        |-- MainApplication.kt
@@ -237,11 +241,13 @@ from the ktlint [README](https://github.com/shyiko/ktlint/blob/master/README.md)
 ## Todo
 
 - [ ] Implement local notifications to remind users about their plant watering schedule.
+- [ ] Implement filter
 - [ ] Showing location of plant on Map in plant detail screen.
 - [ ] Deep linking of plants
 - [ ] Code Quality
   - [ ] Increase test coverage
   - [ ] Fix Lint Error
+  - [ ] Complete Documentation
  
 
 ## Additional Resources
@@ -249,7 +255,6 @@ from the ktlint [README](https://github.com/shyiko/ktlint/blob/master/README.md)
 - [Clean Architecture Uncle Bob](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
 
 ## Third Party Content
--------------------
 
 Select text used for describing the plants (in `plants.json`) are used from Wikipedia via CC BY-SA 3.0 US (license in `ASSETS_LICENSE`).
 
