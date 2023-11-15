@@ -14,6 +14,4 @@ interface PlantingLocalDataSource {
     fun isPlanted(plantId: Int): Flow<Boolean>
 
     fun getPlantedGardens(query: String?): PagingSource<Int, PlantAndPlantingsEntity>
-
 }
-

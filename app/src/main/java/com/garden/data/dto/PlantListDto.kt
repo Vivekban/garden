@@ -1,6 +1,5 @@
 package com.garden.data.dto
 
-
 import com.google.gson.annotations.SerializedName
 
 /**

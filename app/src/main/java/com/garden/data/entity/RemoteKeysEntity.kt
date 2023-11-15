@@ -10,11 +10,11 @@ import androidx.room.PrimaryKey
  */
 @Entity(tableName = "remote_keys")
 data class RemoteKeysEntity(
-    @PrimaryKey @ColumnInfo(name = "id")
+    @PrimaryKey
+    @ColumnInfo(name = "id")
     val id: Int,
     @ColumnInfo(name = "p_key")
     val previousKey: Int?,
     @ColumnInfo(name = "n_key")
     val nextKey: Int?
 )
-

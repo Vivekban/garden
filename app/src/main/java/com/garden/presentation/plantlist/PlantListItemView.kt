@@ -17,7 +17,6 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.garden.R
-import com.garden.data.dto.UnsplashPhotoDto
 import com.garden.domain.model.Plant
 import com.garden.ui.theme.card
 import com.garden.ui.utils.NetworkImage
@@ -27,19 +26,19 @@ fun PlantListItem(plant: Plant, onClick: () -> Unit) {
     ImageListItem(name = plant.name, imageUrl = plant.imageUrl, onClick = onClick)
 }
 
-@Composable
-fun PhotoListItem(photo: UnsplashPhotoDto, onClick: () -> Unit) {
-    ImageListItem(name = photo.user.name, imageUrl = photo.urls.small, onClick = onClick)
-}
-
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ImageListItem(name: String, imageUrl: String?, onClick: () -> Unit) {
+fun ImageListItem(
+    name: String,
+    imageUrl: String?,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Card(
         onClick = onClick,
         elevation = dimensionResource(id = R.dimen.card_elevation),
         shape = MaterialTheme.shapes.card,
-        modifier = Modifier
+        modifier = modifier
             .padding(horizontal = dimensionResource(id = R.dimen.card_side_margin))
             .padding(bottom = dimensionResource(id = R.dimen.card_bottom_margin))
     ) {

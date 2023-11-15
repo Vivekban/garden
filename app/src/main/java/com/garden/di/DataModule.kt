@@ -24,19 +24,23 @@ abstract class DataModule {
 
     @Singleton
     @Binds
-    abstract fun providePlantLocalDataSource(dataSource: PlantLocalDataSourceImpl): PlantLocalDataSource
+    abstract fun providePlantLocalDataSource(dataSource: PlantLocalDataSourceImpl):
+        PlantLocalDataSource
 
     @Singleton
     @Binds
-    abstract fun provideRemoteKeysLocalDataSource(dataSource: RemoteKeysLocalDataSourceImpl): RemoteKeysLocalDataSource
+    abstract fun provideRemoteKeysLocalDataSource(dataSource: RemoteKeysLocalDataSourceImpl):
+        RemoteKeysLocalDataSource
 
     @Singleton
     @Binds
-    abstract fun providePlantRemoteDataSource(dataSource: PlantRemoteDataSourceImpl): PlantRemoteDataSource
+    abstract fun providePlantRemoteDataSource(dataSource: PlantRemoteDataSourceImpl):
+        PlantRemoteDataSource
 
     @Singleton
     @Binds
-    abstract fun providePlantingRemoteDataSource(dataSource: PlantingLocalDataSourceImpl): PlantingLocalDataSource
+    abstract fun providePlantingRemoteDataSource(dataSource: PlantingLocalDataSourceImpl):
+        PlantingLocalDataSource
 
     @Singleton
     @Binds
@@ -44,6 +48,6 @@ abstract class DataModule {
 
     @Singleton
     @Binds
-    abstract fun provideGardenPlantingRepository(repository: GardenPlantingRepositoryImpl): GardenPlantingRepository
-
+    abstract fun provideGardenPlantingRepository(repository: GardenPlantingRepositoryImpl):
+        GardenPlantingRepository
 }

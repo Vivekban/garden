@@ -57,7 +57,7 @@ import com.garden.ui.utils.NetworkImage
 import com.google.accompanist.themeadapter.material.MdcTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import java.util.*
+import java.util.Calendar
 
 /**
  * This is used to determine number of column that can be shown in given space
@@ -73,7 +73,6 @@ fun GardenScreen(
     onPlantClick: (PlantAndPlantings) -> Unit = {},
     onClearSearchClick: VoidCallback = {}
 ) {
-
     val context = LocalContext.current
     LaunchedEffect(key1 = gardenPlants.loadState) {
         if (gardenPlants.loadState.refresh is LoadState.Error) {
@@ -92,40 +91,41 @@ fun GardenScreen(
             .fillMaxSize()
             .onSizeChanged {
                 widthInDp = (it.width / density.density).toInt().dp
-            }) {
+            }
+    ) {
         GardenList(
             gardenPlants = gardenPlants,
             onPlantClick = onPlantClick,
-            modifier = modifier.fillMaxSize(),
             availableWidth = widthInDp
         )
 
         if (gardenPlants.loadState.refresh is LoadState.Loading) {
             LoadingView(modifier = Modifier.align(Alignment.Center))
         } else if (gardenPlants.itemSnapshotList.isEmpty() &&
-            (gardenPlants.loadState.refresh is LoadState.NotLoading || gardenPlants.loadState.append is LoadState.NotLoading)
+            (
+                gardenPlants.loadState.refresh is LoadState.NotLoading &&
+                    gardenPlants.loadState.append is LoadState.NotLoading
+                )
         ) {
             if (searchQuery?.isNotEmpty() == true) {
                 EmptyListView(
-                    modifier = modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     text = stringResource(R.string.no_plant_found_containing, searchQuery),
                     action = stringResource(id = R.string.clear_search),
                     callback = onClearSearchClick
                 )
             } else {
                 EmptyGarden(
-                    modifier = modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     onAddPlantClick = onAddPlantClick
                 )
             }
         }
     }
-
 }
 
 @Composable
 private fun EmptyGarden(onAddPlantClick: () -> Unit, modifier: Modifier = Modifier) {
-
     EmptyListView(
         modifier = modifier,
         text = stringResource(id = R.string.garden_empty),
@@ -136,10 +136,10 @@ private fun EmptyGarden(onAddPlantClick: () -> Unit, modifier: Modifier = Modifi
 
 @Composable
 private fun GardenList(
-    modifier: Modifier = Modifier,
     gardenPlants: LazyPagingItems<PlantAndPlantings>,
     availableWidth: Dp,
     onPlantClick: (PlantAndPlantings) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val columns = (availableWidth / idealTitleWidth).toInt().coerceAtLeast(1)
 
@@ -155,7 +155,7 @@ private fun GardenList(
         )
     ) {
         items(
-            gardenPlants.itemCount,
+            gardenPlants.itemCount
         ) { index ->
             gardenPlants[index]?.let {
                 GardenListItem(plant = it, onPlantClick = onPlantClick)
@@ -165,14 +165,16 @@ private fun GardenList(
         // Loader at the end of the list
         item(span = { GridItemSpan(2) }) {
             if (gardenPlants.loadState.append is LoadState.Loading) {
-                LoadingView(modifier = Modifier.padding(dimensionResource(id = R.dimen.card_side_margin)))
+                LoadingView(
+                    modifier = Modifier.padding(dimensionResource(id = R.dimen.card_side_margin))
+                )
             }
         }
     }
 }
 
 @OptIn(
-    ExperimentalMaterialApi::class,
+    ExperimentalMaterialApi::class
 )
 @Composable
 private fun GardenListItem(
@@ -193,7 +195,7 @@ private fun GardenListItem(
             bottom = dimensionResource(id = R.dimen.card_bottom_margin)
         ),
         elevation = dimensionResource(id = R.dimen.card_elevation),
-        shape = MaterialTheme.shapes.card,
+        shape = MaterialTheme.shapes.card
     ) {
         Column(Modifier.fillMaxWidth()) {
             NetworkImage(
@@ -202,7 +204,7 @@ private fun GardenListItem(
                 Modifier
                     .fillMaxWidth()
                     .height(dimensionResource(id = R.dimen.plant_item_image_height)),
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Crop
             )
 
             Column(
@@ -252,7 +254,6 @@ private fun GardenListItem(
                     style = MaterialTheme.typography.subtitle2
                 )
             }
-
         }
     }
 }
@@ -260,7 +261,8 @@ private fun GardenListItem(
 @Preview
 @Composable
 private fun GardenScreenPreview(
-    @PreviewParameter(GardenScreenPreviewParamProvider::class) gardenPlants: Flow<PagingData<PlantAndPlantings>>
+    @PreviewParameter(GardenScreenPreviewParamProvider::class) gardenPlants:
+        Flow<PagingData<PlantAndPlantings>>
 ) {
     MdcTheme {
         GardenScreen(gardenPlants.collectAsLazyPagingItems())
@@ -282,7 +284,9 @@ private class GardenScreenPreviewParamProvider :
                                 description = "An apple.",
                                 growZoneNumber = 1,
                                 wateringInterval = 2,
-                                imageUrl = "https://images.unsplash.com/photo-1417325384643-aac51acc9e5d?q=75&fm=jpg&w=400&fit=max",
+                                imageUrl =
+                                "https://images.unsplash.com/photo-1417325384643-" +
+                                    "aac51acc9e5d?q=75&fm=jpg&w=400&fit=max"
                             ),
                             plantings = listOf(
                                 Planting(
@@ -295,6 +299,6 @@ private class GardenScreenPreviewParamProvider :
 
                     )
                 )
-            ),
+            )
         )
 }

@@ -8,9 +8,12 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 data class GetPlantAndPlantingUsecaseInput(val query: String)
-class GetPlantAndPlantingUsecase @Inject constructor(private val plantRepository: GardenPlantingRepository) :
+class GetPlantAndPlantingUsecase @Inject constructor(
+    private val plantRepository: GardenPlantingRepository
+) :
     Usecase<GetPlantAndPlantingUsecaseInput, Flow<PagingData<PlantAndPlantings>>> {
-    override fun invoke(input: GetPlantAndPlantingUsecaseInput): Flow<PagingData<PlantAndPlantings>> {
+    override fun invoke(input: GetPlantAndPlantingUsecaseInput):
+        Flow<PagingData<PlantAndPlantings>> {
         return plantRepository.getPlantedGardens(input.query)
     }
 }

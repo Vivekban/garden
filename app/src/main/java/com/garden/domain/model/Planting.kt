@@ -22,6 +22,6 @@ data class Planting(
      * Indicates when the [PlantEntity] was last watered. Used for showing notification when it's
      * time to water the plant.
      */
-    val lastWateringDate: Calendar = Calendar.getInstance(),
+    val lastWateringDate: Calendar = Calendar.getInstance()
 
-    )
+)

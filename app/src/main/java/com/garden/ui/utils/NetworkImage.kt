@@ -3,7 +3,7 @@ package com.garden.ui.utils
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
@@ -37,30 +37,30 @@ fun NetworkImage(
     contentScale: ContentScale = ContentScale.Fit,
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
-    requestBuilderTransform: RequestBuilderTransform<Drawable> = { it },
+    requestBuilderTransform: RequestBuilderTransform<Drawable> = { it }
 ) {
     if (LocalInspectionMode.current) {
         Box(modifier = modifier.background(Color.Magenta))
-        return
+    } else {
+        GlideImage(
+            model = model,
+            contentDescription = contentDescription,
+            modifier = modifier,
+            alignment = alignment,
+            contentScale = contentScale,
+            alpha = alpha,
+            colorFilter = colorFilter,
+            requestBuilderTransform = requestBuilderTransform,
+            loading = placeholder {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(Modifier.size(40.dp))
+                }
+            },
+            failure = placeholder {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Icon(Icons.Default.Warning, "Error")
+                }
+            }
+        )
     }
-    GlideImage(
-        model = model,
-        contentDescription = contentDescription,
-        modifier = modifier,
-        alignment = alignment,
-        contentScale = contentScale,
-        alpha = alpha,
-        colorFilter = colorFilter,
-        requestBuilderTransform = requestBuilderTransform,
-        loading = placeholder {
-            Box(modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(Modifier.size(40.dp))
-            }
-        },
-        failure = placeholder {
-            Box(modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                Icon(Icons.Default.Warning, "Error")
-            }
-        },
-    )
 }

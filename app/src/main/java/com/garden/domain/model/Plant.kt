@@ -3,7 +3,9 @@ package com.garden.domain.model
 import com.garden.common.Constant
 import java.util.Calendar
 import java.util.Calendar.DAY_OF_YEAR
+import javax.annotation.concurrent.Immutable
 
+@Immutable
 data class Plant(
     val id: Int,
     val name: String,
@@ -22,4 +24,3 @@ data class Plant(
 
     override fun toString() = name
 }
-

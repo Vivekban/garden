@@ -28,7 +28,7 @@ class PlantRemoteMediator(
     private val appDatabase: RoomDatabase,
     private val remote: PlantRemoteDataSource,
     private val local: PlantLocalDataSource,
-    private val remoteKeysLocalDataSource: RemoteKeysLocalDataSource,
+    private val remoteKeysLocalDataSource: RemoteKeysLocalDataSource
 ) : RemoteMediator<Int, PlantEntity>() {
 
     override suspend fun load(
@@ -65,7 +65,6 @@ class PlantRemoteMediator(
         }
 
         try {
-
             val result = remote.getPlants(query = query, page = page)
             val endOfPaginationReached = result.data?.isEmpty() ?: true
 
@@ -90,7 +89,6 @@ class PlantRemoteMediator(
             }
 
             return MediatorResult.Success(endOfPaginationReached = result.data?.isEmpty() ?: true)
-
         } catch (exception: Exception) {
             when (exception) {
                 is IOException, is HttpException, is JsonSyntaxException -> {
@@ -102,8 +100,8 @@ class PlantRemoteMediator(
         }
     }
 
-
-    private suspend fun getRemoteKeyForLastItem(state: PagingState<Int, PlantEntity>): RemoteKeysEntity? {
+    private suspend fun getRemoteKeyForLastItem(state: PagingState<Int, PlantEntity>):
+        RemoteKeysEntity? {
         // Get the last page that was retrieved, that contained items.
         // From that last page, get the last item
         return state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()
@@ -113,7 +111,8 @@ class PlantRemoteMediator(
             }
     }
 
-    private suspend fun getRemoteKeyForFirstItem(state: PagingState<Int, PlantEntity>): RemoteKeysEntity? {
+    private suspend fun getRemoteKeyForFirstItem(state: PagingState<Int, PlantEntity>):
+        RemoteKeysEntity? {
         // Get the first page that was retrieved, that contained items.
         // From that first page, get the first item
         return state.pages.firstOrNull { it.data.isNotEmpty() }?.data?.firstOrNull()

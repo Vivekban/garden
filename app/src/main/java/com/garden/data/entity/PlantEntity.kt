@@ -9,7 +9,8 @@ import androidx.room.PrimaryKey
  */
 @Entity(tableName = "plants")
 data class PlantEntity(
-    @PrimaryKey @ColumnInfo(name = "id")
+    @PrimaryKey
+    @ColumnInfo(name = "id")
     val plantId: Int,
     val name: String,
     val description: String,
@@ -17,4 +18,3 @@ data class PlantEntity(
     val wateringInterval: Int,
     val imageUrl: String?
 )
-

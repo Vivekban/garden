@@ -37,7 +37,6 @@ class GardenPlantingRepositoryImpl @Inject constructor(
 
     @ExperimentalPagingApi
     override fun getPlantedGardens(query: String?): Flow<PagingData<PlantAndPlantings>> {
-
         val pagingSourceFactory = { dataSource.getPlantedGardens(query) }
 
         return Pager(
@@ -48,8 +47,5 @@ class GardenPlantingRepositoryImpl @Inject constructor(
             ),
             pagingSourceFactory = pagingSourceFactory
         ).flow.map { it.map { plant -> plant.toModel() } }
-
     }
-
 }
-

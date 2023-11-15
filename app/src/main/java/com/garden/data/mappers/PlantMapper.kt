@@ -10,7 +10,7 @@ fun PlantDto.toEntity() = PlantEntity(
     description = generateDescription(),
     growZoneNumber = growZoneNumber(),
     wateringInterval = wateringInDays(),
-    imageUrl = plantImageDto?.originalUrl,
+    imageUrl = plantImageDto?.originalUrl
 )
 
 fun PlantEntity.toModel() = Plant(
@@ -19,7 +19,7 @@ fun PlantEntity.toModel() = Plant(
     description = description,
     growZoneNumber = growZoneNumber,
     wateringInterval = wateringInterval,
-    imageUrl = imageUrl,
+    imageUrl = imageUrl
 )
 
 fun Plant.toEntity() = PlantEntity(
@@ -28,5 +28,5 @@ fun Plant.toEntity() = PlantEntity(
     description = description,
     growZoneNumber = growZoneNumber,
     wateringInterval = wateringInterval,
-    imageUrl = imageUrl,
+    imageUrl = imageUrl
 )

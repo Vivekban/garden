@@ -33,7 +33,7 @@ class GardenActivity : ComponentActivity() {
         setContent {
             MdcTheme {
                 GardenApp(
-                    homeViewModel = viewModel,
+                    homeViewModel = viewModel
                 )
             }
         }

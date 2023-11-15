@@ -28,7 +28,8 @@ class PlantListTest {
     private fun startPlantList(onPlantClick: (Plant) -> Unit = {}) {
         composeTestRule.setContent {
             PlantListScreen(
-                plants = flowOf(PagingData.from(listOf(plantForTesting()))).collectAsLazyPagingItems(),
+                plants = flowOf(PagingData.from(listOf(plantForTesting())))
+                    .collectAsLazyPagingItems(),
                 searchQuery = null,
                 onPlantClick = onPlantClick
             )

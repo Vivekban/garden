@@ -3,27 +3,27 @@
 
 <resources>
 
-    <style name="ShapeAppearance.Sunflower.Card" parent="ShapeAppearance.MaterialComponents">
+    <style name="ShapeAppearance.Garden.Card" parent="ShapeAppearance.MaterialComponents">
         <item name="cornerFamily">rounded</item>
 
-        <item name="cornerSizeTopLeft">0dp</item>
+        <item name="cornerSizeTopLeft">@dimen/card_corner_radius</item>
         <item name="cornerSizeTopRight">@dimen/card_corner_radius</item>
-        <item name="cornerSizeBottomRight">0dp</item>
+        <item name="cornerSizeBottomRight">@dimen/card_corner_radius</item>
         <item name="cornerSizeBottomLeft">@dimen/card_corner_radius</item>
     </style>
 
-    <style name="ShapeAppearance.Sunflower.Button.Add" parent="ShapeAppearance.MaterialComponents">
+    <style name="ShapeAppearance.Garden.Button.Add" parent="ShapeAppearance.MaterialComponents">
         <item name="cornerFamily">rounded</item>
 
-        <item name="cornerSizeTopLeft">0dp</item>
+        <item name="cornerSizeTopLeft">@dimen/button_corner_radius</item>
         <item name="cornerSizeTopRight">@dimen/button_corner_radius</item>
-        <item name="cornerSizeBottomRight">0dp</item>
+        <item name="cornerSizeBottomRight">@dimen/button_corner_radius</item>
         <item name="cornerSizeBottomLeft">@dimen/button_corner_radius</item>
     </style>
 
-    <style name="ShapeAppearance.Sunflower.FAB" parent="ShapeAppearance.MaterialComponents.SmallComponent" />
+    <style name="ShapeAppearance.Garden.FAB" parent="ShapeAppearance.MaterialComponents.SmallComponent" />
 
     <!-- Add plant button -->
-    <dimen name="button_corner_radius">12dp</dimen>
+    <dimen name="button_corner_radius">4dp</dimen>
 
 </resources>

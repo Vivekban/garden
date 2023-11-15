@@ -15,7 +15,7 @@ interface PlantService {
     @GET("species-list")
     suspend fun getPlants(
         @Query("q") query: String?,
-        @Query("page") page: Int?,
+        @Query("page") page: Int?
     ): PlantListDto
 
     @GET("species/details/{id}")

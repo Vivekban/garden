@@ -1,6 +1,5 @@
 package com.garden.domain.model
 
-import com.garden.domain.model.Plant
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test

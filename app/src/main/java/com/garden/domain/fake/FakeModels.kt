@@ -1,6 +1,5 @@
 package com.garden.domain.fake
 
-
 import com.garden.data.entity.PlantAndPlantingsEntity
 import com.garden.data.entity.PlantEntity
 import com.garden.domain.model.Plant
@@ -12,7 +11,15 @@ import java.util.Calendar
  * Long plant description
  */
 const val testPlantDescription =
-    "European Silver Fir (Abies alba) is an amazing coniferous species native to mountainous regions of central Europe and the Balkans. It is an evergreen tree with a narrow, pyramidal shape and long, soft needles. Its bark is scaly grey-brown and its branches are highly ornamental due to its conical-shaped silver-tinged needles. It is pruned for use as an ornamental evergreen hedging and screening plant, and is also popular for use as a Christmas tree. Young trees grow quickly and have strong, flexible branches which makes them perfect for use as windbreaks. The European Silver Fir is an impressive species, making it ideal for gardens and public spaces."
+    "European Silver Fir (Abies alba) is an amazing coniferous species native to mountainous" +
+        " regions of central Europe and the Balkans. It is an evergreen tree with a narrow," +
+        " pyramidal shape and long, soft needles. Its bark is scaly grey-brown and its branches" +
+        " are highly ornamental due to its conical-shaped silver-tinged needles." +
+        " It is pruned for use as an ornamental evergreen hedging and screening plant," +
+        " and is also popular for use as a Christmas tree." +
+        " Young trees grow quickly and have strong, flexible branches which makes them perfect" +
+        " for use as windbreaks. The European Silver Fir is an impressive species, making it" +
+        " ideal for gardens and public spaces."
 
 /**
  * [PlantEntity] objects used for tests.
@@ -42,4 +49,3 @@ val testPlanting = Planting(1, testPlant.id, testCalendar, testCalendar)
  * [PlantAndPlantingsEntity] object used for tests.
  */
 val testPlantAndGardenPlanting = PlantAndPlantings(testPlant, listOf(testPlanting))
-

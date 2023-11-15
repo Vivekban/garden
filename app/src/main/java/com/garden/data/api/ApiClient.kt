@@ -19,7 +19,6 @@ class ApiClient {
     companion object {
 
         fun getClient(): Retrofit {
-
             val logger =
                 HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
 
@@ -44,7 +43,6 @@ class ApiClient {
                 .baseUrl(BASE_URL)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create()).build()
-
         }
 
         /**
@@ -53,7 +51,6 @@ class ApiClient {
          * Since network source is different from default one that is
          */
         fun getPlantPhotoClient(): Retrofit {
-
             val logger =
                 HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BASIC }
 
@@ -65,8 +62,6 @@ class ApiClient {
                 .baseUrl(BASE_URL_UNSPLASH)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create()).build()
-
         }
     }
-
 }

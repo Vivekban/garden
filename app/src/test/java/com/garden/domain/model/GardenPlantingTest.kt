@@ -1,6 +1,5 @@
 package com.garden.domain.model
 
-import com.garden.domain.model.Planting
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Assert.assertEquals

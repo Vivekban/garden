@@ -14,6 +14,4 @@ interface GardenPlantingRepository {
     fun isPlanted(plantId: Int): Flow<Boolean>
 
     fun getPlantedGardens(query: String?): Flow<PagingData<PlantAndPlantings>>
-
 }
-

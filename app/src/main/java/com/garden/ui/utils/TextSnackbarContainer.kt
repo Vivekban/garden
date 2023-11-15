@@ -51,10 +51,10 @@ fun TextSnackbarContainer(
         MaterialTheme(shapes = Shapes()) {
             SnackbarHost(
                 hostState = snackbarHostState,
-                modifier = modifier
+                modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .systemBarsPadding()
-                    .padding(all = 8.dp),
+                    .padding(all = 8.dp)
             ) {
                 Snackbar(it)
             }

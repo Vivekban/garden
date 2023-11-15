@@ -28,7 +28,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
-
 @RunWith(RobolectricTestRunner::class)
 class GardenPlantingDaoTest {
     private lateinit var database: AppDatabase
@@ -95,14 +94,13 @@ class GardenPlantingDaoTest {
 
     @Test
     fun testGetPlantAndGardenPlantings() = runBlocking {
-
         val plantingList: PagingSource<Int, PlantAndPlantingsEntity> =
             plantingDao.getPlantedGardens("%${query.replace(' ', '%')}%")
 
         val expectedResult = PagingSource.LoadResult.Page(
             data = listOf(testPlantAndGardenPlanting.toEntity()),
             prevKey = null,
-            nextKey = null,
+            nextKey = null
         )
 
         val result = plantingList.load(
@@ -114,6 +112,5 @@ class GardenPlantingDaoTest {
         )
 
         assertThat((result as PagingSource.LoadResult.Page).data, equalTo(expectedResult.data))
-
     }
 }

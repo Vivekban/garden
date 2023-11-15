@@ -44,9 +44,9 @@ val idealTitleWidth: Dp = 180.dp
 
 @Composable
 fun PlantListScreen(
-    modifier: Modifier = Modifier,
     plants: LazyPagingItems<Plant>,
     searchQuery: String?,
+    modifier: Modifier = Modifier,
     onPlantClick: ValueCallback<Plant> = {},
     onClearSearchClick: VoidCallback = {}
 ) {
@@ -65,46 +65,60 @@ fun PlantListScreen(
 
     val density = LocalDensity.current
 
-    Box(modifier = modifier
-        .fillMaxSize()
-        .onSizeChanged {
-            widthInDp = (it.width / density.density).toInt().dp
-        }) {
-        PlantList(modifier, plants, widthInDp, onPlantClick)
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .onSizeChanged {
+                widthInDp = (it.width / density.density).toInt().dp
+            }
+    ) {
+        if (plants.itemSnapshotList.isNotEmpty()) {
+            PlantList(plants, widthInDp, onPlantClick)
+        }
 
         if (plants.loadState.refresh is LoadState.Loading) {
-            Box(modifier = modifier.fillMaxSize()) {
+            Box(modifier = Modifier.fillMaxSize()) {
                 LoadingView(modifier = Modifier.align(Alignment.Center))
             }
-        } else if (plants.itemSnapshotList.isEmpty() &&
-            (plants.loadState.refresh is LoadState.NotLoading || plants.loadState.append is LoadState.NotLoading)
-        ) {
+        } else if ((plants.loadState.append is LoadState.Loading).not()) {
+            // since there is no loading show no items available message
+            if (plants.itemSnapshotList.isEmpty()) {
+                val hasSearchQuery = searchQuery?.isNotEmpty() == true
 
-            val text = if ((searchQuery ?: "").isNotEmpty()) {
-                stringResource(R.string.no_plant_found_containing, searchQuery!!)
-            } else stringResource(R.string.no_plant_found)
+                val text = when {
+                    plants.loadState.refresh is LoadState.Error ->
+                        (plants.loadState.refresh as LoadState.Error).error.toUserFriendlyMessage()
 
-            EmptyListView(
-                modifier = modifier.fillMaxSize(),
-                text = text,
-                action = if ((searchQuery
-                        ?: "").isNotEmpty()
-                ) stringResource(id = R.string.clear_search) else null,
-                callback = onClearSearchClick
-            )
+                    hasSearchQuery -> stringResource(
+                        R.string.no_plant_found_containing,
+                        searchQuery!!
+                    )
+
+                    else -> stringResource(R.string.no_plant_found)
+                }
+
+                EmptyListView(
+                    modifier = Modifier.fillMaxSize(),
+                    text = text,
+                    action = if (hasSearchQuery) {
+                        stringResource(id = R.string.clear_search)
+                    } else {
+                        null
+                    },
+                    callback = onClearSearchClick
+                )
+            }
         }
     }
-
 }
 
 @Composable
 private fun PlantList(
-    modifier: Modifier,
     plants: LazyPagingItems<Plant>,
     availableWidth: Dp,
-    onPlantClick: ValueCallback<Plant>
+    onPlantClick: ValueCallback<Plant>,
+    modifier: Modifier = Modifier
 ) {
-
     val columns = (availableWidth / idealTitleWidth).toInt().coerceAtLeast(1)
 
     LazyVerticalGrid(
@@ -127,23 +141,25 @@ private fun PlantList(
 
         item(span = { GridItemSpan(2) }) {
             if (plants.loadState.append is LoadState.Loading) {
-                LoadingView(modifier = Modifier.padding(dimensionResource(id = R.dimen.card_side_margin)))
+                LoadingView(
+                    modifier = Modifier.padding(dimensionResource(id = R.dimen.card_side_margin))
+                )
             }
         }
     }
 }
 
 @Composable
-fun LoadingView(modifier: Modifier) =
+fun LoadingView(modifier: Modifier = Modifier) =
     CircularProgressIndicator(modifier.testTag("loader"), color = MaterialTheme.colors.onBackground)
 
-//@Preview
-//@Composable
-//private fun PlantListScreenPreview(
+// @Preview
+// @Composable
+// private fun PlantListScreenPreview(
 //    @PreviewParameter(PlantListPreviewParamProvider::class) plants: List<Plant>
-//) {
+// ) {
 //    PlantListScreen(plants = plants)
-//}
+// }
 
 private class PlantListPreviewParamProvider : PreviewParameterProvider<List<Plant>> {
     override val values: Sequence<List<Plant>> =
@@ -153,7 +169,7 @@ private class PlantListPreviewParamProvider : PreviewParameterProvider<List<Plan
                 Plant(1, "Apple", "Apple", growZoneNumber = 1),
                 Plant(2, "Banana", "Banana", growZoneNumber = 2),
                 Plant(3, "Carrot", "Carrot", growZoneNumber = 3),
-                Plant(4, "Dill", "Dill", growZoneNumber = 3),
+                Plant(4, "Dill", "Dill", growZoneNumber = 3)
             )
         )
 }

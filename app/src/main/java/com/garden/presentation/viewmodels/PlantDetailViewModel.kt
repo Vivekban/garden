@@ -20,7 +20,7 @@ import javax.inject.Inject
 class PlantDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     plantRepository: PlantRepositoryImpl,
-    private val gardenPlantingRepository: GardenPlantingRepositoryImpl,
+    private val gardenPlantingRepository: GardenPlantingRepositoryImpl
 ) : ViewModel() {
 
     val plantId: Int = savedStateHandle.get<Int>(PLANT_ID_SAVED_STATE_KEY)!!
@@ -28,19 +28,19 @@ class PlantDetailViewModel @Inject constructor(
     val isPlanted = gardenPlantingRepository.isPlanted(plantId)
     val plant = plantRepository.getPlant(plantId).asResult().asLiveData()
 
-    private val _showSnackbar = MutableLiveData(false)
-    val showSnackbar: LiveData<Boolean>
-        get() = _showSnackbar
+    private val _showSnackBar = MutableLiveData(false)
+    val showSnackBar: LiveData<Boolean>
+        get() = _showSnackBar
 
     fun addPlantToGarden() {
         viewModelScope.launch {
             gardenPlantingRepository.createGardenPlanting(plantId)
-            _showSnackbar.value = true
+            _showSnackBar.value = true
         }
     }
 
     fun dismissSnackbar() {
-        _showSnackbar.value = false
+        _showSnackBar.value = false
     }
 
     companion object {

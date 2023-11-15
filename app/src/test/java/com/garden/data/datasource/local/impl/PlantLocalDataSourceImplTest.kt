@@ -1,16 +1,12 @@
 package com.garden.data.datasource.local.impl
 
 import com.garden.data.database.dao.PlantDao
-import org.junit.Assert.*
-
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnitRunner
-import org.mockito.kotlin.any
 
 @RunWith(MockitoJUnitRunner::class)
 class PlantLocalDataSourceImplTest {

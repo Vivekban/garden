@@ -31,7 +31,7 @@ object Constant {
      *  Used when information about Water required by plants is missing from API
      *  Note: Value is in days
      */
-    //TODO: Create inline class for water days
+    // TODO: Create inline class for water days
     const val DEFAULT_WATERING_NEED = 7
 
     const val MAX_GROWING_ZONES = 20
@@ -51,5 +51,4 @@ object Constant {
      * Dummy support number
      */
     const val SUPPORT_PHONE_NUMBER = "18662223456"
-
 }

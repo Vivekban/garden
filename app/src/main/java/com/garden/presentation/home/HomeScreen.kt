@@ -109,9 +109,8 @@ fun HomeScreen(
         }
 
         scaffoldState.snackbarHostState.showSnackbar(
-            message = info.first,
+            message = info.first
         )
-
     }
 
     Scaffold(
@@ -119,23 +118,26 @@ fun HomeScreen(
         scaffoldState = scaffoldState,
         topBar = {
             HomeTopAppBar(
-                pagerState = pagerState,
                 isSearching = uiState.query is SearchingState.Ongoing,
                 searchQuery = uiState.searchQuery(),
                 onSearchClick = {
                     homeViewModel.handleUiAction(HomeUiAction.UpdateSearchState(true))
-                }, onSearchQueryChanged = { query ->
+                },
+                onSearchQueryChanged = { query ->
                     homeViewModel.handleUiAction(HomeUiAction.Search(query))
-                }, onSearchTriggered = { query ->
+                },
+                onSearchTriggered = { query ->
                     homeViewModel.handleUiAction(HomeUiAction.Search(query))
-                }, onBackClick = {
+                },
+                onBackClick = {
                     // resetting search
                     homeViewModel.handleUiAction(HomeUiAction.Search(""))
                     homeViewModel.handleUiAction(HomeUiAction.UpdateSearchState(false))
                 }
 
             )
-        }) { contentPadding ->
+        }
+    ) { contentPadding ->
         HomePagerScreen(
             modifier = Modifier.padding(top = contentPadding.calculateTopPadding()),
             onPlantClick = onPlantClick,
@@ -147,7 +149,6 @@ fun HomeScreen(
             }
         )
     }
-
 }
 
 @ExperimentalCoroutinesApi
@@ -165,13 +166,13 @@ fun connectivityState(): State<ConnectionState> {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomePagerScreen(
-    modifier: Modifier = Modifier,
-    pages: Array<GardenPage> = GardenPage.values(),
-    viewModel: HomeViewModel = hiltViewModel(),
     pagerState: PagerState,
     clearSearch: VoidCallback,
     onPlantClick: (Plant) -> Unit,
     onPageChange: (GardenPage) -> Unit,
+    modifier: Modifier = Modifier,
+    pages: Array<GardenPage> = GardenPage.values(),
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
     val gardenPlants = viewModel.plantAndPlantingDataSource.collectAsLazyPagingItems()
     val plants = viewModel.plantsPagingData.collectAsLazyPagingItems()
@@ -189,15 +190,13 @@ fun HomePagerScreen(
         onPageChange = {
             onPageChange(it)
             viewModel.handleUiAction(HomeUiAction.PageChange(it))
-        },
+        }
     )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomePagerScreen(
-    modifier: Modifier = Modifier,
-    pages: Array<GardenPage> = GardenPage.values(),
     gardenPlants: LazyPagingItems<PlantAndPlantings>,
     plants: LazyPagingItems<Plant>,
     pagerState: PagerState,
@@ -205,8 +204,9 @@ fun HomePagerScreen(
     clearSearch: VoidCallback,
     onPlantClick: (Plant) -> Unit,
     onPageChange: (GardenPage) -> Unit,
+    modifier: Modifier = Modifier,
+    pages: Array<GardenPage> = GardenPage.values()
 ) {
-
     LaunchedEffect(pagerState.currentPage) {
         onPageChange(pages[pagerState.currentPage])
     }
@@ -265,28 +265,26 @@ fun HomePagerScreen(
                         )
                     },
                     unselectedContentColor = MaterialTheme.colors.primaryVariant,
-                    selectedContentColor = MaterialTheme.colors.secondary,
+                    selectedContentColor = MaterialTheme.colors.secondary
                 )
             }
         }
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun HomeTopAppBar(
-    modifier: Modifier = Modifier,
-    pagerState: PagerState,
     isSearching: Boolean,
     onSearchClick: () -> Unit,
     onBackClick: () -> Unit,
     onSearchQueryChanged: (String) -> Unit,
     searchQuery: String?,
     onSearchTriggered: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     if (isSearching) {
         SearchToolbar(
-            modifier.statusBarsPadding(),
+            modifier = modifier.statusBarsPadding(),
             onBackClick = onBackClick,
             onSearchQueryChanged = onSearchQueryChanged,
             onSearchTriggered = onSearchTriggered,
@@ -297,7 +295,7 @@ private fun HomeTopAppBar(
             title = {
                 Row(
                     Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
+                    horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
                         text = stringResource(id = R.string.app_name)
@@ -323,47 +321,47 @@ private fun HomeTopAppBar(
 
 @Composable
 private fun SearchToolbar(
-    modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
     onSearchQueryChanged: (String) -> Unit,
-    searchQuery: String = "",
     onSearchTriggered: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    searchQuery: String = ""
 ) {
     Surface(color = MaterialTheme.colors.primary) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
         ) {
             IconButton(onClick = { onBackClick() }) {
                 Icon(
                     imageVector = Icons.Rounded.ArrowBack,
                     contentDescription = stringResource(
-                        id = R.string.back,
+                        id = R.string.back
                     ),
                     tint = MaterialTheme.colors.onPrimary
                 )
             }
             SearchTextField(
-                Modifier
+                modifier = Modifier
                     .weight(1f)
                     .padding(8.dp),
                 onSearchQueryChanged = onSearchQueryChanged,
                 onSearchTriggered = onSearchTriggered,
-                searchQuery = searchQuery,
+                searchQuery = searchQuery
             )
             if (searchQuery.isNotEmpty()) {
                 IconButton(
                     onClick = {
                         onSearchQueryChanged("")
-                    },
+                    }
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.Close,
                         contentDescription = stringResource(
-                            id = R.string.clear_search_text_content_desc,
+                            id = R.string.clear_search_text_content_desc
                         ),
-                        tint = MaterialTheme.colors.onPrimary,
+                        tint = MaterialTheme.colors.onPrimary
                     )
                 }
             }
@@ -374,10 +372,10 @@ private fun SearchToolbar(
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun SearchTextField(
-    modifier: Modifier,
     onSearchQueryChanged: (String) -> Unit,
     searchQuery: String,
     onSearchTriggered: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -407,15 +405,15 @@ private fun SearchTextField(
                 }
             },
         keyboardOptions = KeyboardOptions(
-            imeAction = ImeAction.Search,
+            imeAction = ImeAction.Search
         ),
         keyboardActions = KeyboardActions(
             onSearch = {
                 onSearchExplicitlyTriggered()
-            },
+            }
         ),
         maxLines = 1,
-        singleLine = true,
+        singleLine = true
     )
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
@@ -429,17 +427,17 @@ private fun SearchToolbarPreview() {
         SearchToolbar(
             onBackClick = {},
             onSearchQueryChanged = {},
-            onSearchTriggered = {},
+            onSearchTriggered = {}
         )
     }
 }
 
-//@OptIn(ExperimentalFoundationApi::class)
-//@Preview
-//@Composable
-//private fun HomeScreenPreview(
+// @OptIn(ExperimentalFoundationApi::class)
+// @Preview
+// @Composable
+// private fun HomeScreenPreview(
 //    @PreviewParameter(HomeScreenPreviewParamProvider::class) param: HomePreviewParam
-//) {
+// ) {
 //    MdcTheme {
 //        val pagerState = rememberPagerState()
 //        HomePagerScreen(
@@ -450,11 +448,11 @@ private fun SearchToolbarPreview() {
 //            pagerState = pagerState
 //        )
 //    }
-//}
+// }
 
 private data class HomePreviewParam(
     val gardenPlants: List<PlantAndPlantings>,
-    val plants: List<Plant>,
+    val plants: List<Plant>
 )
 
 private class HomeScreenPreviewParamProvider : PreviewParameterProvider<HomePreviewParam> {
@@ -470,7 +468,7 @@ private class HomeScreenPreviewParamProvider : PreviewParameterProvider<HomePrev
                     Plant(1, "Apple", "Apple", growZoneNumber = 1),
                     Plant(2, "Banana", "Banana", growZoneNumber = 2),
                     Plant(3, "Carrot", "Carrot", growZoneNumber = 3),
-                    Plant(4, "Dill", "Dill", growZoneNumber = 3),
+                    Plant(4, "Dill", "Dill", growZoneNumber = 3)
                 )
             )
         )

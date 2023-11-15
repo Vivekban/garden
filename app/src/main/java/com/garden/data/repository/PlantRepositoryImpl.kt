@@ -31,12 +31,11 @@ class PlantRepositoryImpl @Inject constructor(
     private val database: RoomDatabase,
     private val remote: PlantRemoteDataSource,
     private val local: PlantLocalDataSource,
-    private val remoteKeysLocalDataSource: RemoteKeysLocalDataSource,
+    private val remoteKeysLocalDataSource: RemoteKeysLocalDataSource
 ) : PlantRepository {
 
     @OptIn(ExperimentalPagingApi::class)
     override fun getPlants(query: String): Flow<PagingData<Plant>> {
-
         val pagingSourceFactory = { local.getPlants(query) }
 
         return Pager(
@@ -56,15 +55,16 @@ class PlantRepositoryImpl @Inject constructor(
         ).flow.map { it.map { plant -> plant.toModel() } }
     }
 
-    override fun getPlant(plantId: Int): Flow<Plant> = merge(flow {
-        try {
-            val plant = remote.getPlant(id = plantId)
-            val entity = plant.toEntity()
-            local.upsertAll(listOf(entity))
-        } catch (e: Exception) {
-            Log.d("TAG", "getPlant: $e")
-        }
-
-    }, local.getPlant(plantId)).map { it.toModel() }
-
+    override fun getPlant(plantId: Int): Flow<Plant> = merge(
+        flow {
+            try {
+                val plant = remote.getPlant(id = plantId)
+                val entity = plant.toEntity()
+                local.upsertAll(listOf(entity))
+            } catch (e: Exception) {
+                Log.d("TAG", "getPlant: $e")
+            }
+        },
+        local.getPlant(plantId)
+    ).map { it.toModel() }
 }

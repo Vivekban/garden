@@ -1,6 +1,5 @@
 package com.garden.data.dto
 
-
 import com.garden.common.Constant
 import com.garden.domain.fake.testPlantDescription
 import com.google.gson.annotations.SerializedName
@@ -29,16 +28,14 @@ data class PlantDto(
 ) {
 
     fun generateDescription(): String {
-        //TODO: testPlantDescription
+        // TODO: testPlantDescription
         return description ?: testPlantDescription
     }
 
     fun growZoneNumber() = id % Constant.MAX_GROWING_ZONES
 
     fun wateringInDays() = watering?.inDays() ?: Constant.DEFAULT_WATERING_NEED
-
 }
-
 
 enum class WateringNeed {
 
@@ -62,5 +59,4 @@ enum class WateringNeed {
             Frequent -> 1
         }
     }
-
 }

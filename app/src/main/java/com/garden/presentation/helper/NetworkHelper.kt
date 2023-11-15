@@ -25,15 +25,27 @@ val Context.currentConnectivityState: ConnectionState
     }
 
 private fun getCurrentConnectivityState(
-    connectivityManager: ConnectivityManager
+    connectivityManager: ConnectivityManager,
 ): ConnectionState {
-    val connected = connectivityManager.allNetworks.any { network ->
-        connectivityManager.getNetworkCapabilities(network)
-            ?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-            ?: false
+    val network =
+        connectivityManager.activeNetwork // network is currently in a high power state for performing data transmission.
+    network ?: return ConnectionState.Unavailable  // return false if network is null
+    val actNetwork = connectivityManager.getNetworkCapabilities(network)
+        ?: return ConnectionState.Unavailable // return false if Network Capabilities is null
+    return when {
+        actNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> { // check if wifi is connected
+            ConnectionState.Available
+        }
+
+        actNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> { // check if mobile dats is connected
+            ConnectionState.Available
+        }
+
+        else ->
+            ConnectionState.Unavailable
+
     }
 
-    return if (connected) ConnectionState.Available else ConnectionState.Unavailable
 }
 
 /**

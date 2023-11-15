@@ -1,6 +1,5 @@
 package com.garden.data.datasource.remote.impl
 
-import androidx.paging.ExperimentalPagingApi
 import com.garden.data.api.PlantService
 import com.garden.data.datasource.remote.PlantRemoteDataSource
 import com.garden.data.dto.PlantDto
@@ -17,10 +16,8 @@ class PlantRemoteDataSourceImpl @Inject constructor(
     private val plantService: PlantService
 ) : PlantRemoteDataSource {
 
-    @OptIn(ExperimentalPagingApi::class)
     override suspend fun getPlants(query: String?, page: Int): PlantListDto =
         plantService.getPlants(query, page)
 
     override suspend fun getPlant(id: Int): PlantDto = plantService.getPlant(id)
-
 }

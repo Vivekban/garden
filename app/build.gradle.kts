@@ -1,11 +1,11 @@
-
-
 plugins {
     id("com.android.application")
     id("kotlin-android")
     id("kotlin-parcelize")
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
+    id("org.jlleitschuh.gradle.ktlint")
+    id("jacoco")
 }
 
 android {
@@ -31,9 +31,7 @@ android {
                 arguments["dagger.hilt.disableModulesHaveInstallInCheck"] = "true"
             }
         }
-
     }
-
 
     buildTypes {
         debug {
@@ -46,13 +44,13 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_18
+        targetCompatibility = JavaVersion.VERSION_18
     }
 
     kotlinOptions {
         // work-runtime-ktx 2.1.0 and above now requires Java 8
-        jvmTarget = JavaVersion.VERSION_17.toString()
+        jvmTarget = JavaVersion.VERSION_18.toString()
 
         // Enable Coroutines and Flow APIs
         freeCompilerArgs =
@@ -80,8 +78,15 @@ android {
             isIncludeAndroidResources = true
         }
     }
+    kotlin {
+        jvmToolchain(18)
+    }
     namespace = "com.garden"
+}
 
+ktlint {
+    android.set(true)
+    outputColorName.set("RED")
 }
 
 androidComponents {
@@ -137,7 +142,6 @@ dependencies {
     implementation(libs.maps.compose)
     implementation(libs.accompanist.permissions)
 
-
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     // Testing dependencies
@@ -168,6 +172,7 @@ dependencies {
     testImplementation(libs.robolectric)
     testImplementation(libs.androidx.lifecycle.runtime.testing)
 
+    ktlintRuleset(libs.twitter.ktlint.rules)
 }
 
 fun getUnsplashAccess(): String? {

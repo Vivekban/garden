@@ -81,7 +81,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.text.HtmlCompat
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
@@ -117,14 +116,15 @@ data class PlantDetailsCallbacks(
 
 @Composable
 fun PlantDetailsScreen(
-    plantDetailsViewModel: PlantDetailViewModel = hiltViewModel(),
+    plantDetailsViewModel: PlantDetailViewModel,
     onBackClick: VoidCallback,
     onShareClick: (String) -> Unit,
     onSupportCallClick: VoidCallback,
+    modifier: Modifier = Modifier
 ) {
     val plant = plantDetailsViewModel.plant.observeAsState().value
     val isPlanted = plantDetailsViewModel.isPlanted.collectAsState(initial = false).value
-    val showSnackBar = plantDetailsViewModel.showSnackbar.observeAsState().value
+    val showSnackBar = plantDetailsViewModel.showSnackBar.observeAsState().value
 
     val systemUiController = rememberSystemUiController()
 
@@ -136,7 +136,7 @@ fun PlantDetailsScreen(
     }
 
     if (plant?.getOrNull() != null && showSnackBar != null) {
-        Surface {
+        Surface(modifier) {
             TextSnackbarContainer(
                 snackbarText = stringResource(R.string.added_plant_to_garden),
                 showSnackbar = showSnackBar,
@@ -183,12 +183,14 @@ fun PlantDetails(
     // Transition that fades in/out the header with the image and the Toolbar
     val transition = updateTransition(transitionState, label = "")
     val toolbarAlpha = transition.animateFloat(
-        transitionSpec = { spring(stiffness = Spring.StiffnessLow) }, label = ""
+        transitionSpec = { spring(stiffness = Spring.StiffnessLow) },
+        label = ""
     ) { toolbarTransitionState ->
         if (toolbarTransitionState == ToolbarState.HIDDEN) 0f else 1f
     }
     val contentAlpha = transition.animateFloat(
-        transitionSpec = { spring(stiffness = Spring.StiffnessLow) }, label = ""
+        transitionSpec = { spring(stiffness = Spring.StiffnessLow) },
+        label = ""
     ) { toolbarTransitionState ->
         if (toolbarTransitionState == ToolbarState.HIDDEN) 1f else 0f
     }
@@ -215,11 +217,13 @@ fun PlantDetails(
     val showImagePreview = rememberSaveable { mutableStateOf(false) }
 
     if (showImagePreview.value) {
-        FullScreenImage(plant = plant, onClick = {
-            showImagePreview.value = false
-        })
+        FullScreenImage(
+            plant = plant,
+            onClick = {
+                showImagePreview.value = false
+            }
+        )
     } else {
-
         Box(
             modifier
                 .fillMaxSize()
@@ -252,7 +256,9 @@ fun PlantDetails(
                 }
             )
             PlantToolbar(
-                toolbarState, plant.name, callbacks,
+                toolbarState,
+                plant.name,
+                callbacks,
                 toolbarAlpha = { toolbarAlpha.value },
                 contentAlpha = { contentAlpha.value }
             )
@@ -270,7 +276,7 @@ private fun PlantDetailsContent(
     onNamePosition: (Float) -> Unit,
     onFabClick: () -> Unit,
     onClick: () -> Unit,
-    contentAlpha: () -> Float,
+    contentAlpha: () -> Float
 ) {
     Column(Modifier.verticalScroll(scrollState)) {
         ConstraintLayout {
@@ -316,8 +322,8 @@ private fun PlantDetailsContent(
 }
 
 @Composable
-fun FullScreenImage(plant: Plant, onClick: VoidCallback) {
-    Box(modifier = Modifier.fillMaxSize()) {
+fun FullScreenImage(plant: Plant, onClick: VoidCallback, modifier: Modifier = Modifier) {
+    Box(modifier = modifier.fillMaxSize()) {
         var zoom by remember { mutableFloatStateOf(1f) }
 
         PlantImage(
@@ -325,7 +331,7 @@ fun FullScreenImage(plant: Plant, onClick: VoidCallback) {
             modifier = Modifier
                 .graphicsLayer(
                     scaleX = zoom,
-                    scaleY = zoom,
+                    scaleY = zoom
                 )
                 .pointerInput(Unit) {
                     detectTransformGestures(
@@ -339,7 +345,8 @@ fun FullScreenImage(plant: Plant, onClick: VoidCallback) {
         )
 
         IconButton(
-            onClick, Modifier
+            onClick,
+            Modifier
                 .background(
                     color = MaterialTheme.colors.surface,
                     shape = CircleShape
@@ -356,8 +363,8 @@ fun FullScreenImage(plant: Plant, onClick: VoidCallback) {
 
 @Composable
 private fun PlantImage(
-    modifier: Modifier = Modifier,
     imageUrl: String,
+    modifier: Modifier = Modifier,
     imageHeight: Dp? = null,
     placeholderColor: Color = MaterialTheme.colors.onSurface.copy(0.2f),
     contentScale: ContentScale = ContentScale.Crop,
@@ -368,7 +375,9 @@ private fun PlantImage(
     Box(
         modifier
             .fillMaxWidth()
-            .then(if (imageHeight != null) Modifier.height(imageHeight) else Modifier.fillMaxHeight())
+            .then(
+                if (imageHeight != null) Modifier.height(imageHeight) else Modifier.fillMaxHeight()
+            )
             .clickable {
                 onClick?.invoke()
             }
@@ -385,7 +394,7 @@ private fun PlantImage(
             contentDescription = null,
             modifier = Modifier
                 .fillMaxSize(),
-            contentScale = contentScale,
+            contentScale = contentScale
         ) {
             it.addListener(object : RequestListener<Drawable> {
                 override fun onLoadFailed(
@@ -526,16 +535,16 @@ private fun PlantDetailsToolbar(
 
 @Composable
 private fun PlantHeaderActions(
-    modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
     onShareClick: () -> Unit,
     onSupportCallClick: VoidCallback,
+    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .systemBarsPadding()
-            .padding(top = Dimens.ToolbarIconPadding),
+            .padding(top = Dimens.ToolbarIconPadding)
     ) {
         val iconModifier = Modifier
             .sizeIn(
@@ -678,7 +687,6 @@ private fun PlantLocation() {
             )
         }
     }
-
 }
 
 @Preview

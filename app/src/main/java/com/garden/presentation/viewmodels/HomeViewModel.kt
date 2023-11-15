@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 
 /**
@@ -62,7 +63,11 @@ class HomeViewModel @Inject internal constructor(
     private val _state =
         combine(_page, _enableSearching, _searches) { page, enableSearching, search ->
             HomeUiState(
-                query = if (enableSearching.enable) SearchingState.Ongoing(search.query) else SearchingState.No,
+                query = if (enableSearching.enable) {
+                    SearchingState.Ongoing(search.query)
+                } else {
+                    SearchingState.No
+                },
                 page.page
             )
         }.stateIn(
@@ -119,6 +124,7 @@ sealed class HomeUiAction {
     data class PageChange(val page: GardenPage) : HomeUiAction()
 }
 
+@Immutable
 data class HomeUiState(
     val query: SearchingState = SearchingState.No,
     val page: GardenPage = GardenPage.MY_GARDEN
@@ -129,7 +135,6 @@ data class HomeUiState(
             is SearchingState.Ongoing -> query.query
         }
     }
-
 }
 
 private const val LAST_SEARCH_QUERY: String = "last_search_query"

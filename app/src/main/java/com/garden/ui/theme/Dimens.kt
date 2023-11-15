@@ -32,7 +32,6 @@ object Dimens {
     val ToolbarIconSize = 32.dp
 }
 
-
 object AppMargin {
     val cardSide: Dp
         @Composable get() = dimensionResource(R.dimen.card_side_margin)

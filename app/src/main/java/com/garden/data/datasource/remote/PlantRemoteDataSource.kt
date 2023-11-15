@@ -21,5 +21,4 @@ interface PlantRemoteDataSource {
      * Fetch single plant based on its [id]
      */
     suspend fun getPlant(id: Int): PlantDto
-
 }

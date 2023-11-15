@@ -1,7 +1,6 @@
 package com.garden.di
 
 import com.garden.data.api.ApiClient
-import com.garden.data.api.PlantImageService
 import com.garden.data.api.PlantService
 import dagger.Module
 import dagger.Provides
@@ -22,12 +21,6 @@ class NetworkModule {
         return ApiClient.getClient()
     }
 
-    @Singleton
-    @Provides
-    @Named("PlantImage")
-    fun providePhotoApiClient(): Retrofit {
-        return ApiClient.getPlantPhotoClient()
-    }
 
     @Singleton
     @Provides
@@ -35,9 +28,5 @@ class NetworkModule {
         return PlantService.create(retrofit)
     }
 
-    @Singleton
-    @Provides
-    fun providePlantImageService(@Named("PlantImage") retrofit: Retrofit): PlantImageService {
-        return PlantImageService.create(retrofit)
-    }
+
 }

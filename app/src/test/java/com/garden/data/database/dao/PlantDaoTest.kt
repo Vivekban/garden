@@ -53,14 +53,13 @@ class PlantDaoTest {
 
     @Test
     fun testGetPlants() = runBlocking {
-
         val plantList: PagingSource<Int, PlantEntity> =
             plantDao.getPlants("%${query.replace(' ', '%')}%")
 
         val expectedResult = PagingSource.LoadResult.Page(
             data = listOf(plantA, plantB, plantC),
             prevKey = null,
-            nextKey = null,
+            nextKey = null
         )
 
         val result = plantList.load(

@@ -23,12 +23,12 @@ import com.garden.presentation.viewmodels.HomeViewModel
 
 @Composable
 fun GardenApp(
-    homeViewModel: HomeViewModel = hiltViewModel(),
+    homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val navController = rememberNavController()
     GardenNavHost(
         homeViewModel = homeViewModel,
-        navController = navController,
+        navController = navController
     )
 }
 
@@ -36,7 +36,7 @@ fun GardenApp(
 fun GardenNavHost(
     navController: NavHostController,
     onPageChange: (GardenPage) -> Unit = {},
-    homeViewModel: HomeViewModel = hiltViewModel(),
+    homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val activity = (LocalContext.current as Activity)
     NavHost(navController = navController, startDestination = "home") {
@@ -51,11 +51,14 @@ fun GardenNavHost(
         }
         composable(
             "plantDetail/{plantId}",
-            arguments = listOf(navArgument("plantId") {
-                type = NavType.IntType
-            })
+            arguments = listOf(
+                navArgument("plantId") {
+                    type = NavType.IntType
+                }
+            )
         ) {
             PlantDetailsScreen(
+                plantDetailsViewModel = hiltViewModel(),
                 onBackClick = { navController.navigateUp() },
                 onShareClick = {
                     createShareIntent(activity, it)
@@ -80,6 +83,9 @@ private fun createShareIntent(activity: Activity, plantName: String) {
     activity.startActivity(shareIntent)
 }
 
+/**
+ * Helper function for calling functionality.
+ */
 private fun createCallIntent(activity: Activity) {
     val u = Uri.parse("tel:" + Constant.SUPPORT_PHONE_NUMBER)
 
@@ -87,12 +93,10 @@ private fun createCallIntent(activity: Activity) {
     // intent as the phone number.
     val i = Intent(Intent.ACTION_DIAL, u)
     try {
-
         // Launch the Phone app's dialer with a phone
         // number to dial a call.
         activity.startActivity(i)
     } catch (s: SecurityException) {
-
         // show() method display the toast with
         // exception message.
         Toast.makeText(activity, "An error occurred", Toast.LENGTH_LONG)
