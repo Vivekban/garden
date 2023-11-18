@@ -21,6 +21,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarResult
 import androidx.compose.material.Surface
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
@@ -32,10 +33,8 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -48,7 +47,6 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
@@ -65,16 +63,17 @@ import com.garden.common.VoidCallback
 import com.garden.domain.model.Plant
 import com.garden.domain.model.PlantAndPlantings
 import com.garden.presentation.garden.GardenScreen
-import com.garden.presentation.helper.ConnectionState
-import com.garden.presentation.helper.currentConnectivityState
-import com.garden.presentation.helper.observeConnectivityAsFlow
 import com.garden.presentation.plantlist.PlantListScreen
 import com.garden.presentation.viewmodels.HomeUiAction
 import com.garden.presentation.viewmodels.HomeViewModel
 import com.garden.presentation.viewmodels.SearchingState
 import com.google.accompanist.themeadapter.material.MdcTheme
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
+
+/**
+ * Callback to show snackbar
+ */
+typealias ShowSnackBar = suspend (message: String, action: String?) -> SnackbarResult
 
 enum class GardenPage(
     @StringRes val titleResId: Int,
@@ -96,21 +95,16 @@ fun HomeScreen(
 
     val uiState by homeViewModel.state.collectAsState()
 
-    // This will cause re-composition on every network state change
-    val connection by connectivityState()
-
     val scaffoldState = rememberScaffoldState() // this contains the `SnackbarHostState`
 
-    val colors = MaterialTheme.colors
-    LaunchedEffect(key1 = connection) {
-        val info = when (connection === ConnectionState.Available) {
-            true -> Pair("Back Online", colors.primary)
-            else -> Pair("No internet connection", colors.error)
+    val info = uiState.message?.let { stringResource(it) }
+    LaunchedEffect(key1 = info) {
+        info?.let {
+            scaffoldState.snackbarHostState.showSnackbar(
+                message = it
+            )
+            homeViewModel.messageShown()
         }
-
-        scaffoldState.snackbarHostState.showSnackbar(
-            message = info.first
-        )
     }
 
     Scaffold(
@@ -146,20 +140,11 @@ fun HomeScreen(
             pagerState = pagerState,
             clearSearch = {
                 homeViewModel.handleUiAction(HomeUiAction.Search(""))
+            },
+            showSnackBar = { message, action ->
+                scaffoldState.snackbarHostState.showSnackbar(message, action)
             }
         )
-    }
-}
-
-@ExperimentalCoroutinesApi
-@Composable
-fun connectivityState(): State<ConnectionState> {
-    val context = LocalContext.current
-
-    // Creates a State<ConnectionState> with current connectivity state as initial value
-    return produceState(initialValue = context.currentConnectivityState) {
-        // In a coroutine, can make suspend calls
-        context.observeConnectivityAsFlow().collect { value = it }
     }
 }
 
@@ -172,7 +157,8 @@ fun HomePagerScreen(
     onPageChange: (GardenPage) -> Unit,
     modifier: Modifier = Modifier,
     pages: Array<GardenPage> = GardenPage.values(),
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel(),
+    showSnackBar: ShowSnackBar? = null
 ) {
     val gardenPlants = viewModel.plantAndPlantingDataSource.collectAsLazyPagingItems()
     val plants = viewModel.plantsPagingData.collectAsLazyPagingItems()
@@ -190,7 +176,8 @@ fun HomePagerScreen(
         onPageChange = {
             onPageChange(it)
             viewModel.handleUiAction(HomeUiAction.PageChange(it))
-        }
+        },
+        showSnackBar = showSnackBar
     )
 }
 
@@ -205,7 +192,8 @@ fun HomePagerScreen(
     onPlantClick: (Plant) -> Unit,
     onPageChange: (GardenPage) -> Unit,
     modifier: Modifier = Modifier,
-    pages: Array<GardenPage> = GardenPage.values()
+    pages: Array<GardenPage> = GardenPage.values(),
+    showSnackBar: ShowSnackBar? = null
 ) {
     LaunchedEffect(pagerState.currentPage) {
         onPageChange(pages[pagerState.currentPage])
@@ -234,7 +222,8 @@ fun HomePagerScreen(
                         onPlantClick = {
                             onPlantClick(it.plant)
                         },
-                        onClearSearchClick = clearSearch
+                        onClearSearchClick = clearSearch,
+                        showSnackBar = showSnackBar
                     )
                 }
 
@@ -244,7 +233,8 @@ fun HomePagerScreen(
                         onPlantClick = onPlantClick,
                         modifier = Modifier.fillMaxSize(),
                         searchQuery = searchQuery,
-                        onClearSearchClick = clearSearch
+                        onClearSearchClick = clearSearch,
+                        showSnackBar = showSnackBar
                     )
                 }
             }
@@ -439,7 +429,7 @@ private fun SearchToolbarPreview() {
 //    @PreviewParameter(HomeScreenPreviewParamProvider::class) param: HomePreviewParam
 // ) {
 //    MdcTheme {
-//        val pagerState = rememberPagerState()
+//        val pagerState = rememberPagerState { GardenPage.values().size }
 //        HomePagerScreen(
 //            onPlantClick = {},
 //            onPageChange = {},

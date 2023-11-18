@@ -5,83 +5,68 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import androidx.core.content.getSystemService
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-
-sealed class ConnectionState {
-    object Available : ConnectionState()
-    object Unavailable : ConnectionState()
-}
+import kotlinx.coroutines.flow.conflate
+import javax.inject.Inject
 
 /**
- * Network utility to get current state of internet connection
+ * Utility for reporting app connectivity status
  */
-val Context.currentConnectivityState: ConnectionState
-    get() {
-        val connectivityManager =
-            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        return getCurrentConnectivityState(connectivityManager)
-    }
-
-private fun getCurrentConnectivityState(
-    connectivityManager: ConnectivityManager,
-): ConnectionState {
-    val network =
-        connectivityManager.activeNetwork // network is currently in a high power state for performing data transmission.
-    network ?: return ConnectionState.Unavailable  // return false if network is null
-    val actNetwork = connectivityManager.getNetworkCapabilities(network)
-        ?: return ConnectionState.Unavailable // return false if Network Capabilities is null
-    return when {
-        actNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> { // check if wifi is connected
-            ConnectionState.Available
-        }
-
-        actNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> { // check if mobile dats is connected
-            ConnectionState.Available
-        }
-
-        else ->
-            ConnectionState.Unavailable
-
-    }
-
+interface NetworkMonitor {
+    val isOnline: Flow<Boolean>
 }
 
-/**
- * Network Utility to observe availability or unavailability of Internet connection
- */
-@ExperimentalCoroutinesApi
-fun Context.observeConnectivityAsFlow() = callbackFlow {
-    val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
-    val callback = NetworkCallback { connectionState -> trySend(connectionState) }
-
-    val networkRequest = NetworkRequest.Builder()
-        .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-        .build()
-
-    connectivityManager.registerNetworkCallback(networkRequest, callback)
-
-    // Set current state
-    val currentState = getCurrentConnectivityState(connectivityManager)
-    trySend(currentState)
-
-    // Remove callback when not used
-    awaitClose {
-        // Remove listeners
-        connectivityManager.unregisterNetworkCallback(callback)
-    }
-}
-
-fun NetworkCallback(callback: (ConnectionState) -> Unit): ConnectivityManager.NetworkCallback {
-    return object : ConnectivityManager.NetworkCallback() {
-        override fun onAvailable(network: Network) {
-            callback(ConnectionState.Available)
+class ConnectivityManagerNetworkMonitor @Inject constructor(
+    @ApplicationContext private val context: Context
+) : NetworkMonitor {
+    override val isOnline: Flow<Boolean> = callbackFlow {
+        val connectivityManager = context.getSystemService<ConnectivityManager>()
+        if (connectivityManager == null) {
+            channel.trySend(false)
+            channel.close()
+            return@callbackFlow
         }
 
-        override fun onLost(network: Network) {
-            callback(ConnectionState.Unavailable)
+        /**
+         * The callback's methods are invoked on changes to *any* network matching the [NetworkRequest],
+         * not just the active network. So we can simply track the presence (or absence) of such [Network].
+         */
+        val callback = object : ConnectivityManager.NetworkCallback() {
+
+            private val networks = mutableSetOf<Network>()
+
+            override fun onAvailable(network: Network) {
+                networks += network
+                channel.trySend(true)
+            }
+
+            override fun onLost(network: Network) {
+                networks -= network
+                channel.trySend(networks.isNotEmpty())
+            }
+        }
+
+        val request = NetworkRequest.Builder()
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            .build()
+        connectivityManager.registerNetworkCallback(request, callback)
+
+        /**
+         * Sends the latest connectivity status to the underlying channel.
+         */
+        channel.trySend(connectivityManager.isCurrentlyConnected())
+
+        awaitClose {
+            connectivityManager.unregisterNetworkCallback(callback)
         }
     }
+        .conflate()
+
+    private fun ConnectivityManager.isCurrentlyConnected() = activeNetwork
+        ?.let(::getNetworkCapabilities)
+        ?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) ?: false
 }

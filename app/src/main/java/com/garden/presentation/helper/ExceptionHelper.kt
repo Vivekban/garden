@@ -1,15 +1,12 @@
 package com.garden.presentation.helper
 
+import com.garden.R
 import java.net.UnknownHostException
 
-fun Throwable.toUserFriendlyMessage(): String {
+fun Throwable.toUserFriendlyMessage(): Int {
     return when (this) {
-        is UnknownHostException -> {
-            "Network Unavailable! Please check internet settings"
-        }
+        is UnknownHostException -> R.string.network_unavailable
 
-        else -> {
-            message ?: "Something went wrong"
-        }
+        else -> R.string.something_went_wrong
     }
 }

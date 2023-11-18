@@ -42,5 +42,9 @@
     <string name="no_plant_found_containing" translatable="false">No plants found matching "%1$s"</string>
     <string name="clear_search">Clear search</string>
     <string name="menu_item_call">Call\n</string>
+    <string name="no_internet_connection">No internet connection</string>
+    <string name="internet_connected">Internet connected</string>
+    <string name="something_went_wrong">Something went wrong</string>
+    <string name="network_unavailable">Network Unavailable!</string>
 
 </resources>

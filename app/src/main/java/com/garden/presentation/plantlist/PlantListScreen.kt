@@ -1,6 +1,5 @@
 package com.garden.presentation.plantlist
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,23 +18,30 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.garden.R
 import com.garden.common.ValueCallback
 import com.garden.common.VoidCallback
 import com.garden.domain.model.Plant
 import com.garden.presentation.helper.toUserFriendlyMessage
+import com.garden.presentation.home.ShowSnackBar
 import com.garden.presentation.view.EmptyListView
+import com.google.accompanist.themeadapter.material.MdcTheme
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 /**
  * This is used to determine number of column that can be shown in given space
@@ -45,19 +51,19 @@ val idealTitleWidth: Dp = 180.dp
 @Composable
 fun PlantListScreen(
     plants: LazyPagingItems<Plant>,
-    searchQuery: String?,
     modifier: Modifier = Modifier,
+    searchQuery: String? = null,
     onPlantClick: ValueCallback<Plant> = {},
-    onClearSearchClick: VoidCallback = {}
+    onClearSearchClick: VoidCallback = {},
+    showSnackBar: ShowSnackBar? = null
 ) {
-    val context = LocalContext.current
-    LaunchedEffect(key1 = plants.loadState) {
-        if (plants.loadState.refresh is LoadState.Error) {
-            Toast.makeText(
-                context,
-                (plants.loadState.refresh as LoadState.Error).error.toUserFriendlyMessage(),
-                Toast.LENGTH_SHORT
-            ).show()
+    if (plants.loadState.refresh is LoadState.Error) {
+        val error =
+            stringResource(
+                (plants.loadState.refresh as LoadState.Error).error.toUserFriendlyMessage()
+            )
+        LaunchedEffect(key1 = plants.loadState.refresh) {
+            showSnackBar?.invoke(error, null)
         }
     }
 
@@ -87,7 +93,10 @@ fun PlantListScreen(
 
                 val text = when {
                     plants.loadState.refresh is LoadState.Error ->
-                        (plants.loadState.refresh as LoadState.Error).error.toUserFriendlyMessage()
+                        stringResource(
+                            (plants.loadState.refresh as LoadState.Error)
+                                .error.toUserFriendlyMessage()
+                        )
 
                     hasSearchQuery -> stringResource(
                         R.string.no_plant_found_containing,
@@ -153,23 +162,29 @@ private fun PlantList(
 fun LoadingView(modifier: Modifier = Modifier) =
     CircularProgressIndicator(modifier.testTag("loader"), color = MaterialTheme.colors.onBackground)
 
-// @Preview
-// @Composable
-// private fun PlantListScreenPreview(
-//    @PreviewParameter(PlantListPreviewParamProvider::class) plants: List<Plant>
-// ) {
-//    PlantListScreen(plants = plants)
-// }
+@Preview
+@Composable
+private fun PlantListScreenPreview(
+    @PreviewParameter(PlantListPreviewParamProvider::class) plants: Flow<PagingData<Plant>>
+) {
+    MdcTheme {
+        PlantListScreen(plants = plants.collectAsLazyPagingItems())
+    }
+}
 
-private class PlantListPreviewParamProvider : PreviewParameterProvider<List<Plant>> {
-    override val values: Sequence<List<Plant>> =
+private class PlantListPreviewParamProvider : PreviewParameterProvider<Flow<PagingData<Plant>>> {
+    override val values: Sequence<Flow<PagingData<Plant>>> =
         sequenceOf(
-            emptyList(),
-            listOf(
-                Plant(1, "Apple", "Apple", growZoneNumber = 1),
-                Plant(2, "Banana", "Banana", growZoneNumber = 2),
-                Plant(3, "Carrot", "Carrot", growZoneNumber = 3),
-                Plant(4, "Dill", "Dill", growZoneNumber = 3)
+            flowOf(PagingData.from(listOf())),
+            flowOf(
+                PagingData.from(
+                    listOf(
+                        Plant(1, "Apple", "Apple", growZoneNumber = 1),
+                        Plant(2, "Banana", "Banana", growZoneNumber = 2),
+                        Plant(3, "Carrot", "Carrot", growZoneNumber = 3),
+                        Plant(4, "Dill", "Dill", growZoneNumber = 3)
+                    )
+                )
             )
         )
 }

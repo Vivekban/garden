@@ -1,6 +1,5 @@
 package com.garden.presentation.garden
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,7 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.pluralStringResource
@@ -49,6 +47,7 @@ import com.garden.common.VoidCallback
 import com.garden.domain.model.Plant
 import com.garden.domain.model.PlantAndPlantings
 import com.garden.domain.model.Planting
+import com.garden.presentation.home.ShowSnackBar
 import com.garden.presentation.plantlist.LoadingView
 import com.garden.presentation.view.EmptyListView
 import com.garden.presentation.viewmodels.PlantAndGardenPlantingsViewModel
@@ -71,16 +70,16 @@ fun GardenScreen(
     searchQuery: String? = null,
     onAddPlantClick: () -> Unit = {},
     onPlantClick: (PlantAndPlantings) -> Unit = {},
-    onClearSearchClick: VoidCallback = {}
+    onClearSearchClick: VoidCallback = {},
+    showSnackBar: ShowSnackBar? = null
 ) {
-    val context = LocalContext.current
-    LaunchedEffect(key1 = gardenPlants.loadState) {
+    val unknownError = stringResource(R.string.something_went_wrong)
+    LaunchedEffect(key1 = gardenPlants.loadState.refresh) {
         if (gardenPlants.loadState.refresh is LoadState.Error) {
-            Toast.makeText(
-                context,
-                (gardenPlants.loadState.refresh as LoadState.Error).error.message,
-                Toast.LENGTH_SHORT
-            ).show()
+            showSnackBar?.invoke(
+                (gardenPlants.loadState.refresh as LoadState.Error).error.message ?: unknownError,
+                null
+            )
         }
     }
     var widthInDp by remember { mutableStateOf(IntSize.Zero.width.dp) }

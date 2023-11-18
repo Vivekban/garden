@@ -1,10 +1,12 @@
 package com.garden.presentation.viewmodels
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.garden.R
 import com.garden.common.Constant
 import com.garden.domain.model.Plant
 import com.garden.domain.model.PlantAndPlantings
@@ -12,6 +14,7 @@ import com.garden.domain.usecase.plant.GetPlantsUsecase
 import com.garden.domain.usecase.plant.GetPlantsUsecaseInput
 import com.garden.domain.usecase.planting.GetPlantAndPlantingUsecase
 import com.garden.domain.usecase.planting.GetPlantAndPlantingUsecaseInput
+import com.garden.presentation.helper.NetworkMonitor
 import com.garden.presentation.home.GardenPage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -24,6 +27,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -37,10 +42,13 @@ import javax.inject.Inject
 class HomeViewModel @Inject internal constructor(
     private val getPlantsUsecase: GetPlantsUsecase,
     private val getPlantAndPlantingUsecase: GetPlantAndPlantingUsecase,
-    private val savedStateHandle: SavedStateHandle
+    networkMonitor: NetworkMonitor,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private val _actionFlow = MutableSharedFlow<HomeUiAction>()
+
+    private val _messageFlow = MutableSharedFlow<Int?>()
 
     private val _page =
         _actionFlow.filterIsInstance<HomeUiAction.PageChange>().distinctUntilChanged().onStart {
@@ -60,15 +68,28 @@ class HomeViewModel @Inject internal constructor(
     private val _enableSearching =
         _actionFlow.filterIsInstance<HomeUiAction.UpdateSearchState>().distinctUntilChanged()
 
+    private val _isOnline = networkMonitor.isOnline.distinctUntilChanged()
+
+    private val _allMessage = merge(
+        _messageFlow,
+        _isOnline.map { if (it) R.string.internet_connected else R.string.network_unavailable }
+    )
+
     private val _state =
-        combine(_page, _enableSearching, _searches) { page, enableSearching, search ->
+        combine(
+            _page,
+            _enableSearching,
+            _searches,
+            _allMessage
+        ) { page, enableSearching, search, allMessage ->
             HomeUiState(
                 query = if (enableSearching.enable) {
                     SearchingState.Ongoing(search.query)
                 } else {
                     SearchingState.No
                 },
-                page.page
+                page.page,
+                allMessage
             )
         }.stateIn(
             viewModelScope,
@@ -76,12 +97,9 @@ class HomeViewModel @Inject internal constructor(
             initialValue = HomeUiState()
         )
 
-    val handleUiAction: (HomeUiAction) -> Unit = {
-        viewModelScope.launch {
-            _actionFlow.emit(it)
-        }
-    }
-
+    /**
+     * Represents HomeScreen Ui state
+     */
     val state: StateFlow<HomeUiState> = _state
 
     /**
@@ -116,6 +134,18 @@ class HomeViewModel @Inject internal constructor(
     private fun getPlants(query: String): Flow<PagingData<Plant>> {
         return getPlantsUsecase(GetPlantsUsecaseInput(query))
     }
+
+    fun messageShown() {
+        viewModelScope.launch {
+            _messageFlow.emit(null)
+        }
+    }
+
+    fun handleUiAction(uiAction: HomeUiAction) {
+        viewModelScope.launch {
+            _actionFlow.emit(uiAction)
+        }
+    }
 }
 
 sealed class HomeUiAction {
@@ -127,7 +157,8 @@ sealed class HomeUiAction {
 @Immutable
 data class HomeUiState(
     val query: SearchingState = SearchingState.No,
-    val page: GardenPage = GardenPage.MY_GARDEN
+    val page: GardenPage = GardenPage.MY_GARDEN,
+    @StringRes val message: Int? = null,
 ) {
     fun searchQuery(): String? {
         return when (query) {

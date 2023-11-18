@@ -21,12 +21,9 @@ class NetworkModule {
         return ApiClient.getClient()
     }
 
-
     @Singleton
     @Provides
     fun providePlantService(@Named("Plant") retrofit: Retrofit): PlantService {
         return PlantService.create(retrofit)
     }
-
-
 }

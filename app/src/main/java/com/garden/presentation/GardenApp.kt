@@ -22,12 +22,9 @@ import com.garden.presentation.plantdetail.PlantDetailsScreen
 import com.garden.presentation.viewmodels.HomeViewModel
 
 @Composable
-fun GardenApp(
-    homeViewModel: HomeViewModel = hiltViewModel()
-) {
+fun GardenApp() {
     val navController = rememberNavController()
     GardenNavHost(
-        homeViewModel = homeViewModel,
         navController = navController
     )
 }

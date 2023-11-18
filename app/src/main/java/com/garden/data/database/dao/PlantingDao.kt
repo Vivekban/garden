@@ -29,8 +29,8 @@ interface PlantingDao {
     @Transaction
     @Query(
         "SELECT * FROM plants" +
-                " WHERE id IN (SELECT DISTINCT(plant_id) FROM garden_plantings) " +
-                "AND name like :query"
+            " WHERE id IN (SELECT DISTINCT(plant_id) FROM garden_plantings) " +
+            "AND name like :query"
     )
     fun getPlantedGardens(query: String): PagingSource<Int, PlantAndPlantingsEntity>
 
