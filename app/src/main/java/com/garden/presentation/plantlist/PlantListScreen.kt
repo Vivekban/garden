@@ -33,9 +33,9 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.garden.R
-import com.garden.common.ValueCallback
-import com.garden.common.VoidCallback
-import com.garden.domain.model.Plant
+import com.garden.domain.plant.Plant
+import com.garden.presentation.common.ValueCallback
+import com.garden.presentation.common.VoidCallback
 import com.garden.presentation.helper.toUserFriendlyMessage
 import com.garden.presentation.home.ShowSnackBar
 import com.garden.presentation.view.EmptyListView

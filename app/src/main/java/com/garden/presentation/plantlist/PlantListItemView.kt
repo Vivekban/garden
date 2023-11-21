@@ -17,9 +17,9 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.garden.R
-import com.garden.domain.model.Plant
-import com.garden.ui.theme.card
-import com.garden.ui.utils.NetworkImage
+import com.garden.domain.plant.Plant
+import com.garden.presentation.theme.card
+import com.garden.presentation.view.NetworkImage
 
 @Composable
 fun PlantListItem(plant: Plant, onClick: () -> Unit) {

@@ -9,17 +9,17 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
-import com.garden.common.Constant
-import com.garden.common.Constant.DATABASE_NAME
-import com.garden.common.Constant.PLANT_DATA_FILENAME
-import com.garden.data.database.dao.PlantDao
-import com.garden.data.database.dao.PlantingDao
-import com.garden.data.database.dao.RemoteKeysDao
+import com.garden.data.common.DataConstant
+import com.garden.data.common.DataConstant.DATABASE_NAME
+import com.garden.data.common.DataConstant.PLANT_DATA_FILENAME
 import com.garden.data.database.workers.SeedDatabaseWorker
 import com.garden.data.database.workers.SeedDatabaseWorker.Companion.KEY_FILENAME
-import com.garden.data.entity.PlantEntity
-import com.garden.data.entity.PlantingEntity
-import com.garden.data.entity.RemoteKeysEntity
+import com.garden.data.plant.PlantEntity
+import com.garden.data.plant.RemoteKeysEntity
+import com.garden.data.plant.dao.PlantDao
+import com.garden.data.plant.dao.PlantingDao
+import com.garden.data.plant.dao.RemoteKeysDao
+import com.garden.data.planting.PlantingEntity
 
 /**
  * The Room database for this app
@@ -54,7 +54,7 @@ abstract class AppDatabase : RoomDatabase() {
                     object : Callback() {
                         override fun onCreate(db: SupportSQLiteDatabase) {
                             super.onCreate(db)
-                            if (Constant.LOAD_DEFAULT_PLANT_IN_DB) {
+                            if (DataConstant.LOAD_DEFAULT_PLANT_IN_DB) {
                                 val request = OneTimeWorkRequestBuilder<SeedDatabaseWorker>()
                                     .setInputData(workDataOf(KEY_FILENAME to PLANT_DATA_FILENAME))
                                     .build()

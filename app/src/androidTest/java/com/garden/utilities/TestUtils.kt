@@ -5,15 +5,15 @@ import android.content.Intent
 import androidx.appcompat.widget.Toolbar
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
-import com.garden.data.entity.PlantAndPlantingsEntity
-import com.garden.data.entity.PlantEntity
-import com.garden.domain.model.Plant
-import com.garden.domain.model.PlantAndPlantings
-import com.garden.domain.model.Planting
+import com.garden.data.plant.PlantEntity
+import com.garden.data.plantandplanting.PlantAndPlantingsEntity
+import com.garden.domain.plant.Plant
+import com.garden.domain.plantandplanting.PlantAndPlantings
+import com.garden.domain.planting.Planting
+import java.util.Calendar
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.`is`
-import java.util.Calendar
 
 /**
  * [PlantEntity] objects used for tests.

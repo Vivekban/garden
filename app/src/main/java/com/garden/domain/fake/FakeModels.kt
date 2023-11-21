@@ -1,11 +1,13 @@
 package com.garden.domain.fake
 
-import com.garden.data.entity.PlantAndPlantingsEntity
-import com.garden.data.entity.PlantEntity
-import com.garden.domain.model.Plant
-import com.garden.domain.model.PlantAndPlantings
-import com.garden.domain.model.Planting
+import com.garden.data.plant.PlantEntity
+import com.garden.data.plantandplanting.PlantAndPlantingsEntity
+import com.garden.domain.plant.Plant
+import com.garden.domain.plantandplanting.PlantAndPlantings
+import com.garden.domain.planting.Planting
 import java.util.Calendar
+
+// TODO: Remove this standalone file instead of this add fake values to respective models
 
 /**
  * Long plant description

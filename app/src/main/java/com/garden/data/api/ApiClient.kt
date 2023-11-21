@@ -1,8 +1,7 @@
 package com.garden.data.api
 
 import com.garden.BuildConfig
-import com.garden.common.Constant.BASE_URL
-import com.garden.common.Constant.BASE_URL_UNSPLASH
+import com.garden.data.common.DataConstant.BASE_URL
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -41,25 +40,6 @@ class ApiClient {
 
             return Retrofit.Builder()
                 .baseUrl(BASE_URL)
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create()).build()
-        }
-
-        /**
-         * Responsible for providing more image of Plants.
-         *
-         * Since network source is different from default one that is
-         */
-        fun getPlantPhotoClient(): Retrofit {
-            val logger =
-                HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BASIC }
-
-            val client = OkHttpClient.Builder()
-                .addInterceptor(logger)
-                .build()
-
-            return Retrofit.Builder()
-                .baseUrl(BASE_URL_UNSPLASH)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create()).build()
         }

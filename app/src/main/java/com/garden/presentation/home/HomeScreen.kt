@@ -59,14 +59,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.garden.R
-import com.garden.common.VoidCallback
-import com.garden.domain.model.Plant
-import com.garden.domain.model.PlantAndPlantings
+import com.garden.domain.plant.Plant
+import com.garden.domain.plantandplanting.PlantAndPlantings
+import com.garden.presentation.common.VoidCallback
 import com.garden.presentation.garden.GardenScreen
 import com.garden.presentation.plantlist.PlantListScreen
-import com.garden.presentation.viewmodels.HomeUiAction
-import com.garden.presentation.viewmodels.HomeViewModel
-import com.garden.presentation.viewmodels.SearchingState
 import com.google.accompanist.themeadapter.material.MdcTheme
 import kotlinx.coroutines.launch
 
