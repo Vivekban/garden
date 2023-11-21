@@ -87,15 +87,14 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.garden.R
-import com.garden.common.Constant
-import com.garden.common.VoidCallback
 import com.garden.databinding.ItemPlantDescriptionBinding
-import com.garden.domain.model.Plant
-import com.garden.presentation.viewmodels.PlantDetailViewModel
-import com.garden.ui.theme.Dimens
-import com.garden.ui.theme.visible
-import com.garden.ui.utils.NetworkImage
-import com.garden.ui.utils.TextSnackbarContainer
+import com.garden.domain.plant.Plant
+import com.garden.presentation.common.PresentationConstant
+import com.garden.presentation.common.VoidCallback
+import com.garden.presentation.theme.Dimens
+import com.garden.presentation.theme.visible
+import com.garden.presentation.view.NetworkImage
+import com.garden.presentation.view.TextSnackbarContainer
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.accompanist.themeadapter.material.MdcTheme
 import com.google.android.gms.maps.model.CameraPosition
@@ -670,7 +669,7 @@ private fun PlantDescription(description: String) {
 @Composable
 private fun PlantLocation() {
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(Constant.MISSISSAUGA, 10f)
+        position = CameraPosition.fromLatLngZoom(PresentationConstant.MISSISSAUGA, 10f)
     }
     Box(
         Modifier
@@ -684,7 +683,7 @@ private fun PlantLocation() {
             cameraPositionState = cameraPositionState
         ) {
             AdvancedMarker(
-                state = MarkerState(position = Constant.MISSISSAUGA),
+                state = MarkerState(position = PresentationConstant.MISSISSAUGA),
                 title = "Marker in Mississauga"
             )
         }

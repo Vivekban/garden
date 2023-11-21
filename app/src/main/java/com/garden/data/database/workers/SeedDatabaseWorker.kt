@@ -6,7 +6,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.garden.data.database.AppDatabase
 import com.garden.data.database.workers.SeedDatabaseWorker.Companion.KEY_FILENAME
-import com.garden.data.entity.PlantEntity
+import com.garden.data.plant.PlantEntity
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader

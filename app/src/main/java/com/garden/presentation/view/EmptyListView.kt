@@ -16,8 +16,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import com.garden.common.VoidCallback
-import com.garden.ui.theme.Dimens
+import com.garden.presentation.common.VoidCallback
+import com.garden.presentation.theme.Dimens
 import com.google.accompanist.themeadapter.material.MdcTheme
 
 @Composable

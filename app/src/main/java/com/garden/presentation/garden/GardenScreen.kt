@@ -43,20 +43,19 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.garden.R
-import com.garden.common.VoidCallback
-import com.garden.domain.model.Plant
-import com.garden.domain.model.PlantAndPlantings
-import com.garden.domain.model.Planting
+import com.garden.domain.plant.Plant
+import com.garden.domain.plantandplanting.PlantAndPlantings
+import com.garden.domain.planting.Planting
+import com.garden.presentation.common.VoidCallback
 import com.garden.presentation.home.ShowSnackBar
 import com.garden.presentation.plantlist.LoadingView
+import com.garden.presentation.theme.card
 import com.garden.presentation.view.EmptyListView
-import com.garden.presentation.viewmodels.PlantAndGardenPlantingsViewModel
-import com.garden.ui.theme.card
-import com.garden.ui.utils.NetworkImage
+import com.garden.presentation.view.NetworkImage
 import com.google.accompanist.themeadapter.material.MdcTheme
+import java.util.Calendar
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import java.util.Calendar
 
 /**
  * This is used to determine number of column that can be shown in given space

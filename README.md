@@ -72,71 +72,68 @@ Google official has comprehensive detail on the Architecture [here](https://deve
 ## Folder Structure
 
 When using Clean Architecture with Jetpack Compose in an Android app, we can adopt a hybrid approach that incorporates both feature-based and layer-based structuring.
-This allows us to leverage the benefits of Clean Architecture and accommodate the UI-centric nature of Jetpack Compose. Here's a suggested folder structure:
-Folder structure is important for scalability and readability
+This allows us to leverage the benefits of Clean Architecture and accommodate the UI-centric nature of Jetpack Compose. Feature based approach 
+Here's a suggested folder structure:
+
+First first level is *Layer* based and second level is *Feature* based. 
 
     |-- garden
-       |-- MainApplication.kt
-       |-- common
-       |-- data
-       |   |-- api
-       |   |   |-- ApiClient.kt
-       |   |   |-- PlantService.kt
-       |   |-- database
-       |   |   |-- AppDatabase.kt
-       |   |   |-- Converters.kt
-       |   |   |-- DatabaseUtility.kt
-       |   |   |-- dao
-       |   |   |   |-- PlantDao.kt
-       |   |   |-- workers
-       |   |   |   |-- SeedDatabaseWorker.kt
-       |   |-- datasource
-       |   |   |-- local
-       |   |   |   |-- PlantLocalDataSource.kt
-       |   |   |   |-- RemoteKeysLocalDataSource.kt
-       |   |   |   |-- impl
-       |   |   |   |   |-- PlantLocalDataSourceImpl.kt
-       |   |   |-- remote
-       |   |   |   |-- PlantRemoteDataSource.kt
-       |   |   |   |-- impl
-       |   |   |   |   |-- PlantRemoteDataSourceImpl.kt
-       |   |   |   |-- mediator
-       |   |   |   |   |-- PlantRemoteMediator.kt
-       |   |-- dto
-       |   |   |-- PlantDto.kt
-       |   |-- entity
-       |   |   |-- PlantEntity.kt
-       |   |-- mappers
-       |   |   |-- PlantMapper.kt
-       |   |-- repository
-       |   |   |-- PlantRepositoryImpl.kt
-       |-- di
-       |   |-- DataModule.kt
-       |   |-- DatabaseModule.kt
-       |   |-- NetworkModule.kt
-       |-- domain
-       |   |-- fake
-       |   |   |-- FakeModels.kt
-       |   |-- model
-       |   |   |-- Plant.kt
-       |   |-- repository
-       |   |   |-- PlantRepository.kt
-       |   |-- usecase
-       |   |   |-- plant
-       |   |   |   |-- GetPlantsUsecase.kt
-       |-- presentation
-       |   |-- GardenActivity.kt
-       |   |-- GardenApp.kt
-       |   |-- helper
-       |   |   |-- ExceptionHelper.kt
-       |   |   |-- NetworkHelper.kt
-       |   |-- home
-       |   |   |-- HomeScreen.kt
-       |   |-- plantlist
-       |   |   |-- PlantListScreen.kt
-       |   |-- view
-       |   |-- viewmodels
-       |   |   |-- HomeViewModel.kt
+        |-- MainApplication.kt
+        |-- data
+        |   |-- api
+        |   |-- common
+        |   |-- database
+        |   |-- di
+        |   |-- plant
+        |   |   |-- PlantEntity.kt
+        |   |   |-- PlantMapper.kt
+        |   |   |-- PlantRepositoryImpl.kt
+        |   |   |-- PlantService.kt
+        |   |   |-- RemoteKeysEntity.kt
+        |   |   |-- dao
+        |   |   |   |-- PlantDao.kt
+        |   |   |-- datasource
+        |   |   |   |-- local
+        |   |   |   |   |-- PlantLocalDataSource.kt
+        |   |   |   |   |-- PlantLocalDataSourceImpl.kt
+        |   |   |   |   |-- RemoteKeysLocalDataSource.kt
+        |   |   |   |   |-- RemoteKeysLocalDataSourceImpl.kt
+        |   |   |   |-- remote
+        |   |   |   |   |-- PlantRemoteDataSource.kt
+        |   |   |   |   |-- PlantRemoteDataSourceImpl.kt
+        |   |   |   |   |-- PlantRemoteMediator.kt
+        |   |   |-- dto
+        |   |   |   |-- PlantDto.kt
+        |   |-- plantandplanting
+        |   |-- planting
+        |-- domain
+        |   |-- common
+        |   |   |-- Usecase.kt
+        |   |-- fake
+        |   |   |-- FakeModels.kt
+        |   |-- plant
+        |   |   |-- Plant.kt
+        |   |   |-- PlantRepository.kt
+        |   |   |-- usecase
+        |   |   |   |-- GetPlantsUsecase.kt
+        |   |-- ..
+        |-- presentation
+        |   |-- GardenActivity.kt
+        |   |-- GardenApp.kt
+        |   |-- common
+        |   |-- di
+        |   |-- garden
+        |   |   |-- GardenScreen.kt
+        |   |   |-- PlantAndGardenPlantingsViewModel.kt
+        |   |-- helper
+        |   |-- home
+        |   |-- plantdetail
+        |   |   |-- PlantDetailScroller.kt
+        |   |   |-- PlantDetailView.kt
+        |   |   |-- PlantDetailViewModel.kt
+        |   |-- theme
+        |   |-- view
+
 
 
 ## Built With 🛠

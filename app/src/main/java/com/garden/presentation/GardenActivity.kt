@@ -21,7 +21,7 @@ class GardenActivity : ComponentActivity() {
                     .detectDiskWrites()
                     .detectNetwork()
                     // or .detectAll() for all detectable problems
-                    .penaltyFlashScreen()
+                    .penaltyDialog()
                     .penaltyLog()
                     .build()
             )

@@ -15,11 +15,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.garden.R
-import com.garden.common.Constant
+import com.garden.presentation.common.PresentationConstant
 import com.garden.presentation.home.GardenPage
 import com.garden.presentation.home.HomeScreen
+import com.garden.presentation.home.HomeViewModel
 import com.garden.presentation.plantdetail.PlantDetailsScreen
-import com.garden.presentation.viewmodels.HomeViewModel
 
 @Composable
 fun GardenApp() {
@@ -84,7 +84,7 @@ private fun createShareIntent(activity: Activity, plantName: String) {
  * Helper function for calling functionality.
  */
 private fun createCallIntent(activity: Activity) {
-    val u = Uri.parse("tel:" + Constant.SUPPORT_PHONE_NUMBER)
+    val u = Uri.parse("tel:" + PresentationConstant.SUPPORT_PHONE_NUMBER)
 
     // Create the intent and set the data for the
     // intent as the phone number.

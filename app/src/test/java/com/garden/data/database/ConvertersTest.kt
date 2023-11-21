@@ -1,12 +1,12 @@
 package com.garden.data.database
 
-import org.junit.Assert.assertEquals
-import org.junit.Test
 import java.util.Calendar
 import java.util.Calendar.DAY_OF_MONTH
 import java.util.Calendar.MONTH
 import java.util.Calendar.SEPTEMBER
 import java.util.Calendar.YEAR
+import org.junit.Assert.assertEquals
+import org.junit.Test
 
 class ConvertersTest {
 
