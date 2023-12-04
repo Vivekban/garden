@@ -6,8 +6,9 @@ import androidx.room.Room
 import androidx.test.platform.app.InstrumentationRegistry
 import com.garden.MainCoroutineRule
 import com.garden.data.database.AppDatabase
-import com.garden.data.plant.PlantRepositoryImpl
-import com.garden.data.planting.PlantingRepositoryImpl
+import com.garden.domain.plant.usecase.GetPlantUsecase
+import com.garden.domain.planting.usecase.AddPlantToGardenUsecase
+import com.garden.domain.planting.usecase.IsPlantPlantedUsecase
 import com.garden.runBlockingTest
 import com.garden.utilities.testPlant
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -37,10 +38,13 @@ class PlantDetailViewModelTest {
         .around(coroutineRule)
 
     @Inject
-    lateinit var plantRepository: PlantRepositoryImpl
+    lateinit var getPlantUsecase: GetPlantUsecase
 
     @Inject
-    lateinit var gardenPlantingRepository: PlantingRepositoryImpl
+    lateinit var isPlantPlantedUsecase: IsPlantPlantedUsecase
+
+    @Inject
+    lateinit var addPlantToGardenUsecase: AddPlantToGardenUsecase
 
     @Before
     fun setUp() {
@@ -53,7 +57,12 @@ class PlantDetailViewModelTest {
             set("plantId", testPlant.id)
         }
         viewModel =
-            PlantDetailViewModel(savedStateHandle, plantRepository, gardenPlantingRepository)
+            PlantDetailViewModel(
+                savedStateHandle,
+                getPlantUsecase,
+                isPlantPlantedUsecase,
+                addPlantToGardenUsecase
+            )
     }
 
     @After
@@ -64,7 +73,7 @@ class PlantDetailViewModelTest {
     @Test
     @Throws(InterruptedException::class)
     fun testDefaultValues() = coroutineRule.runBlockingTest {
-        val result = viewModel.isPlanted.first()
+        val result = viewModel.uiState.first().isPlanted
         assertFalse(result)
     }
 }

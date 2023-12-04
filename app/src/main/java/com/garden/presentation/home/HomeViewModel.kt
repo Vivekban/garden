@@ -35,7 +35,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /**
- * The ViewModel for HomeSceen.
+ * The ViewModel for HomeScreen.
  */
 @HiltViewModel
 class HomeViewModel @Inject internal constructor(

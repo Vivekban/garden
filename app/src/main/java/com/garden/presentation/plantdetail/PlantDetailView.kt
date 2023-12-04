@@ -48,9 +48,7 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -82,6 +80,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.text.HtmlCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
@@ -122,9 +121,10 @@ fun PlantDetailsScreen(
     onSupportCallClick: VoidCallback,
     modifier: Modifier = Modifier
 ) {
-    val plant = plantDetailsViewModel.plant.observeAsState().value
-    val isPlanted = plantDetailsViewModel.isPlanted.collectAsState(initial = false).value
-    val showSnackBar = plantDetailsViewModel.showSnackBar.observeAsState().value
+    val state by plantDetailsViewModel.uiState.collectAsStateWithLifecycle()
+    val plant = state.plant
+    val isPlanted = state.isPlanted
+    val showSnackBar = state.showSnackBar
 
     val systemUiController = rememberSystemUiController()
 
@@ -135,7 +135,7 @@ fun PlantDetailsScreen(
         }
     }
 
-    if (plant?.getOrNull() != null && showSnackBar != null) {
+    if (plant.getOrNull() != null) {
         Surface(modifier) {
             TextSnackbarContainer(
                 snackbarText = stringResource(R.string.added_plant_to_garden),
@@ -156,7 +156,7 @@ fun PlantDetailsScreen(
                 )
             }
         }
-    } else if (plant?.isLoading == true) {
+    } else if (plant.isLoading) {
         Box(modifier = Modifier.fillMaxSize()) {
             CircularProgressIndicator(Modifier.align(Alignment.Center))
         }

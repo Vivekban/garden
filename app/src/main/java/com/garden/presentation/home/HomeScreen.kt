@@ -33,7 +33,6 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -56,6 +55,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.garden.R
@@ -83,14 +83,14 @@ enum class GardenPage(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
+    onPlantClick: (Plant) -> Unit,
+    onPageChange: (GardenPage) -> Unit,
     modifier: Modifier = Modifier,
-    onPlantClick: (Plant) -> Unit = {},
-    onPageChange: (GardenPage) -> Unit = {},
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val pagerState = rememberPagerState { GardenPage.values().size }
 
-    val uiState by homeViewModel.state.collectAsState()
+    val uiState by homeViewModel.state.collectAsStateWithLifecycle()
 
     val scaffoldState = rememberScaffoldState() // this contains the `SnackbarHostState`
 
@@ -159,7 +159,7 @@ fun HomePagerScreen(
 ) {
     val gardenPlants = viewModel.plantAndPlantingDataSource.collectAsLazyPagingItems()
     val plants = viewModel.plantsPagingData.collectAsLazyPagingItems()
-    val uiState by viewModel.state.collectAsState()
+    val uiState by viewModel.state.collectAsStateWithLifecycle()
 
     HomePagerScreen(
         modifier = modifier,
