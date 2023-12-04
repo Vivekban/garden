@@ -48,7 +48,6 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -81,6 +80,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.text.HtmlCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
@@ -121,7 +121,7 @@ fun PlantDetailsScreen(
     onSupportCallClick: VoidCallback,
     modifier: Modifier = Modifier
 ) {
-    val state by plantDetailsViewModel.uiState.collectAsState()
+    val state by plantDetailsViewModel.uiState.collectAsStateWithLifecycle()
     val plant = state.plant
     val isPlanted = state.isPlanted
     val showSnackBar = state.showSnackBar
